@@ -13,6 +13,8 @@
 // LOOP VARs
   unsigned long previousMillis[] = {0, 0};
   const long interval[] = {2000, 10000}; // in ms
+  const String SECRET_KEY = ""; // Your phrase to connect to your website, not implemented yet lol
+  String proccessedGPS = "";
 
 // GPS stuff
 #define TINY_GSM_MODEM_SIM7000
@@ -170,21 +172,41 @@ void getGPSdata(){
   SerialMon.println("Requesting current GPS/GNSS/GLONASS location");
   if (modem.getGPS(&lat, &lon, &speed, &alt, &vsat, &usat, &accuracy,
                      &year, &month, &day, &hour, &min, &sec)) {
+      
+  //   proccessedGPS = String(lat, 8) ?? NULL + String(lon, 8) ?? NULL + "Speed: " + String(speed) ?? NULL + "\tAltitude: " + String(alt);
   //   SerialMon.println("Latitude: " + String(lat, 8) + "\tLongitude: " + String(lon, 8));
   //   SerialMon.println("Speed: " + String(speed) + "\tAltitude: " + String(alt));
   //   SerialMon.println("Visible Satellites: " + String(vsat) + "\tUsed Satellites: " + String(usat));
   //   SerialMon.println("Accuracy: " + String(accuracy));
   //   SerialMon.println("Year: " + String(year) + "\tMonth: " + String(month) + "\tDay: " + String(day));
   //   SerialMon.println("Hour: " + String(hour) + "\tMinute: " + String(min) + "\tSecond: " + String(sec));
+
+
+  // Create a clean, comma-separated string (CSV)
+  proccessedGPS = String(lat, 8) + "," + 
+                  String(lon, 8) + "," + 
+                  String(speed) + "," + 
+                  String(alt) + "," + 
+                  String(usat) + "," +
+                  String(hour) + ":" + 
+                  String(min) + ":" + 
+                  String(sec) + ",1";
+                    
+  //SerialMon.println("Success! Data: " + proccessedGPS);
+
+  //String gps_raw = modem.getGPSraw();
+  // SerialMon.println("GPS/GNSS Based Location String: " + gps_raw + "\n");
   } 
   else {
-     SerialMon.println("Couldn't get GPS/GNSS/GLONASS location, retrying...");
-
+    SerialMon.println("Couldn't get GPS/GNSS/GLONASS location, retrying...");
+    proccessedGPS = "0,0,0,0,0,0:0:0,0";
   }
+
+  SerialMon.println(proccessedGPS);
+
   
   //SerialMon.println("Retrieving GPS/GNSS/GLONASS location as a string");
-  String gps_raw = modem.getGPSraw();
-  SerialMon.println("GPS/GNSS Based Location String: " + gps_raw + "\n");
+
   // SerialMon.println("Disabling GPS");
   // modem.disableGPS();
 
