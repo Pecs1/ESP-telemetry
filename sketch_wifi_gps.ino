@@ -188,19 +188,21 @@ void getGPSdata(){
                   String(speed) + "," + 
                   String(alt) + "," + 
                   String(usat) + "," +
+                  String(accuracy) + "," +
                   String(hour) + ":" + 
                   String(min) + ":" + 
                   String(sec) + ",1";
                     
   //SerialMon.println("Success! Data: " + proccessedGPS);
 
-  //String gps_raw = modem.getGPSraw();
-  // SerialMon.println("GPS/GNSS Based Location String: " + gps_raw + "\n");
   } 
   else {
-    SerialMon.println("Couldn't get GPS/GNSS/GLONASS location, retrying...");
-    proccessedGPS = "0,0,0,0,0,0:0:0,0";
+    SerialMon.println("Couldn't get GPS/GNSS/GLONASS location :C");
+    proccessedGPS = "0,0,0,0,0,0,0:0:0,0";
   }
+
+  String gps_raw = modem.getGPSraw();
+  SerialMon.println("debug:" + gps_raw + "\n");
 
   SerialMon.println(proccessedGPS);
 
