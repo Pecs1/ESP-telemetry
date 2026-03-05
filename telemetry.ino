@@ -9,20 +9,22 @@
   copies or substantial portions of the Software.
 */
 
-
-// LOOP VARs
-  unsigned long previousMillis[] = {0, 0};
-  const long interval[] = {2000, 10000}; // in ms
-  const String SECRET_KEY = ""; // Your phrase to connect to your website, not implemented yet lol
-  String proccessedGPS = "";
-
-// GPS stuff
-#define TINY_GSM_MODEM_SIM7000
+#define TINY_GSM_MODEM_SIM7000SSL // need to use this instead of SIM7000
 #define TINY_GSM_RX_BUFFER 1024 // Set RX buffer to 1Kb
 
-#include <TinyGsmClient.h> // GPS
+#include <TinyGsmClient.h>
+#include <ArduinoHttpClient.h>
+#include <esp_now.h>
+#include <WiFi.h>
 
-// LilyGO T-SIM7000G Pinout
+#define SerialMon Serial
+#define SerialAT  Serial1
+
+// #include <StreamDebugger.h>
+// StreamDebugger debugger(SerialAT, SerialMon);
+// TinyGsm modem(debugger); // Pass the debugger instead of SerialAT
+
+// Pinout
 #define UART_BAUD   115200
 #define PIN_DTR     25
 #define PIN_TX      27
@@ -31,33 +33,64 @@
 
 #define LED_PIN     12
 
-// Set serial for debug console (to Serial Monitor, default speed 115200)
-#define SerialMon Serial
-// Set serial for AT commands
-#define SerialAT  Serial1
+#define SD_MISO     2
+#define SD_MOSI     15
+#define SD_SCLK     14
+#define SD_CS       13
+
+
+
+// --- CELLULAR SETTINGS ---
+const char apn[]      = "o2internet"; // your APN
+const char gprsUser[] = "";
+const char gprsPass[] = "";
+
+const char server[]   = "telemetry.pecs.dev"; // your URL
+const char resource[] = "/ingest.php"; // your endpoint
+const int  port       = 443; // if http then 80
+const char apiKey[]   = "your-key";
 
 TinyGsm modem(SerialAT);
+TinyGsmClientSecure client(modem);
+HttpClient          http(client, server, port);
 
-// WIFI THINGS
-  #include <esp_now.h> // wifi?
-  #include <WiFi.h> // wifi duh
+// Global Vars
+unsigned long previousMillis[] = {0, 0}; 
+const long interval[] = {2000, 10000}; // 0: Wifi, 1: GPS
+String proccessedGPS = "";
+String gpsBuffer = "";
+int batchCounter = 0;
 
-  // REPLACE WITH YOUR RECEIVER MAC Address
-  uint8_t broadcastAddress[] = {0xEC, 0xE3, 0x34, 0x8E, 0xEE, 0xCC};
+// ESP-NOW Setup
+uint8_t broadcastAddress[] = {0xEC, 0xE3, 0x34, 0x8E, 0xEE, 0xCC};
+typedef struct struct_message {
+  char a[32];
+  int b;
+  float c;
+  bool d;
+} struct_message;
+struct_message myData;
+esp_now_peer_info_t peerInfo;
 
-  // Structure example to send dat
-  // Must match the receiver structure
-  typedef struct struct_message {
-    char a[32];
-    int b;
-    float c;
-    bool d;
-  } struct_message;
+void modemPowerOn(){
+  pinMode(PWR_PIN, OUTPUT);
+  digitalWrite(PWR_PIN, LOW);
+  delay(1000);
+  digitalWrite(PWR_PIN, HIGH);
+}
 
-  // Create a struct_message called myData
-  struct_message myData;
+void modemPowerOff(){
+  pinMode(PWR_PIN, OUTPUT);
+  digitalWrite(PWR_PIN, LOW);
+  delay(1500);
+  digitalWrite(PWR_PIN, HIGH);
+}
 
-  esp_now_peer_info_t peerInfo;
+void modemRestart(){
+  modemPowerOff();
+  delay(1000);
+  modemPowerOn();
+}
 
 void setup(){
   SerialMon.begin(115200);
@@ -73,18 +106,61 @@ void setup(){
   delay(300);
   digitalWrite(PWR_PIN, LOW);
 
-  delay(1000);
-  
+
+  modemPowerOn();
+
   // Set module baud rate and UART pins
   SerialAT.begin(UART_BAUD, SERIAL_8N1, PIN_RX, PIN_TX);
-
+  delay(6000);
   // Restart takes quite some time
   // To skip it, call init() instead of restart()
   SerialMon.println("Initializing modem...");
   if (!modem.restart()) {
     Serial.println("Failed to restart modem, attempting to continue without restarting");
   }
+
+  SerialMon.println("Performing Hard Network Reset...");
   
+  // Personal configs that work for me, you might not need these
+    // Reset the profiles
+    modem.sendAT("+CDNSCFG=\"8.8.8.8\",\"8.8.4.4\""); // Set DNS manually just in case
+    modem.waitResponse();
+
+    // Define the APN in BOTH slots 0 and 1 (to cover all bases)
+    modem.sendAT("+CGDCONT=0,\"IP\",\"o2internet\""); 
+    modem.waitResponse();
+    modem.sendAT("+CGDCONT=1,\"IP\",\"o2internet\""); 
+    modem.waitResponse();
+
+    // Enable the network to "Auto-Select" (COPS=0)
+    // This is better than forcing 23106 if the tower is being picky
+    modem.sendAT("+COPS=0"); 
+    modem.waitResponse();
+
+    // Try to activate the packet service on Slot 0
+    modem.sendAT("+CNACT=0,1"); 
+    modem.waitResponse();
+
+    modem.sendAT("+CSSLCFG=\"sslversion\",0,3"); // Set TLS 1.2
+    modem.waitResponse();
+    modem.sendAT("+CSSLCFG=\"sni\",0,\"telemetry.pecs.dev\""); // Required for Cloudflare
+    modem.waitResponse();
+    modem.sendAT("+CASSLCFG=0,\"SSL\",0"); // Bind Link 0 to SSL Context 0
+    modem.waitResponse();
+      
+
+  // --- CONNECT TO GPRS ---
+  SerialMon.print("Connecting to APN: ");
+  SerialMon.println(apn);
+  if (!modem.gprsConnect(apn, gprsUser, gprsPass)) {
+    SerialMon.println("GPRS connection failed. Check SIM or signal.");
+  } else {
+    SerialMon.println("GPRS connected successfully!");
+  }
+  if (modem.isNetworkConnected()) {
+    SerialMon.println("Network connected");
+  }
+
   // Print modem info
   String modemName = modem.getModemName();
   delay(500);
@@ -126,7 +202,8 @@ void setup(){
     return;
   }
 
-
+  modem.sendAT("+SGPIO=0,4,1,1");
+  modem.enableGPS();
 }
 
 void loop(){
@@ -143,16 +220,17 @@ void loop(){
 
     getGPSdata();
   }
+
+  if (batchCounter >= 6) {
+      if (modem.isGprsConnected()) {
+          sendToAPI(gpsBuffer);
+          gpsBuffer = "";
+          batchCounter = 0;
+      }
+  }
 }
 
 void getGPSdata(){
-  // Set SIM7000G GPIO4 HIGH ,turn on GPS power
-  // CMD:AT+SGPIO=0,4,1,1
-  // Only in version 20200415 is there a function to control GPS power
-  modem.sendAT("+SGPIO=0,4,1,1");
-  if (modem.waitResponse(10000L) != 1) {
-    SerialMon.println(" SGPIO=0,4,1,1 false ");
-  }
 
   modem.enableGPS();
   float lat      = 0;
@@ -171,29 +249,26 @@ void getGPSdata(){
 
   SerialMon.println("Requesting current GPS/GNSS/GLONASS location");
   if (modem.getGPS(&lat, &lon, &speed, &alt, &vsat, &usat, &accuracy,
-                     &year, &month, &day, &hour, &min, &sec)) {
+                    &year, &month, &day, &hour, &min, &sec)) {
       
-  //   proccessedGPS = String(lat, 8) ?? NULL + String(lon, 8) ?? NULL + "Speed: " + String(speed) ?? NULL + "\tAltitude: " + String(alt);
-  //   SerialMon.println("Latitude: " + String(lat, 8) + "\tLongitude: " + String(lon, 8));
-  //   SerialMon.println("Speed: " + String(speed) + "\tAltitude: " + String(alt));
-  //   SerialMon.println("Visible Satellites: " + String(vsat) + "\tUsed Satellites: " + String(usat));
-  //   SerialMon.println("Accuracy: " + String(accuracy));
-  //   SerialMon.println("Year: " + String(year) + "\tMonth: " + String(month) + "\tDay: " + String(day));
-  //   SerialMon.println("Hour: " + String(hour) + "\tMinute: " + String(min) + "\tSecond: " + String(sec));
+    // Create a clean, comma-separated string (CSV)
+    proccessedGPS = String(lat, 8) + "," + 
+                    String(lon, 8) + "," + 
+                    String(speed) + "," + 
+                    String(alt) + "," + 
+                    String(usat) + "," +
+                    String(accuracy) + "," +
+                    String(hour) + ":" + 
+                    String(min) + ":" + 
+                    String(sec) + ",1";
 
-
-  // Create a clean, comma-separated string (CSV)
-  proccessedGPS = String(lat, 8) + "," + 
-                  String(lon, 8) + "," + 
-                  String(speed) + "," + 
-                  String(alt) + "," + 
-                  String(usat) + "," +
-                  String(accuracy) + "," +
-                  String(hour) + ":" + 
-                  String(min) + ":" + 
-                  String(sec) + ",1";
-                    
-  //SerialMon.println("Success! Data: " + proccessedGPS);
+    if (gpsBuffer != "") {
+      gpsBuffer += ";"; 
+    }
+    gpsBuffer += proccessedGPS;
+    
+    batchCounter++;
+    SerialMon.println("Point added to buffer (" + String(batchCounter) + "/6)");
 
   } 
   else {
@@ -201,25 +276,8 @@ void getGPSdata(){
     proccessedGPS = "0,0,0,0,0,0,0:0:0,0";
   }
 
-  String gps_raw = modem.getGPSraw();
-  SerialMon.println("debug:" + gps_raw + "\n");
-
-  SerialMon.println(proccessedGPS);
-
-  
-  //SerialMon.println("Retrieving GPS/GNSS/GLONASS location as a string");
-
-  // SerialMon.println("Disabling GPS");
-  // modem.disableGPS();
-
-  // Set SIM7000G GPIO4 LOW ,turn off GPS power
-  // CMD:AT+SGPIO=0,4,1,0
-  // Only in version 20200415 is there a function to control GPS power
-  // modem.sendAT("+SGPIO=0,4,1,0");
-  // if (modem.waitResponse(10000L) != 1) {
-  //  SerialMon.println(" SGPIO=0,4,1,0 false ");
-  // }
-
+  // String gps_raw = modem.getGPSraw(); // uncoment for debug if you have issues with GPS
+  // SerialMon.println("debug:" + gps_raw + "\n");
 }
 
 void wifiComunication() {
@@ -243,6 +301,49 @@ void wifiComunication() {
 // wifi thingie
 // callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-    Serial.print("\r\nLast Packet Send Status:\t");
-    Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+}
+
+void sendToAPI(String data) {
+  if (data == "") return;
+  
+  SerialMon.println("Sending via Single-Block Transmission...");
+
+  // Build the entire request string manually
+  String httpRequest = "POST " + String(resource) + " HTTP/1.1\r\n";
+  httpRequest += "Host: " + String(server) + "\r\n";
+  httpRequest += "X-API-KEY: " + String(apiKey) + "\r\n";
+  httpRequest += "Content-Type: text/plain\r\n";
+  httpRequest += "Content-Length: " + String(data.length()) + "\r\n";
+  httpRequest += "Connection: close\r\n\r\n";
+  httpRequest += data;
+
+  // Use the SECURE client directly to bypass the fragmented HttpClient logic
+  if (!client.connect(server, port)) {
+    SerialMon.println("Connection failed");
+    return;
   }
+
+  // SEND EVERYTHING AT ONCE
+  client.print(httpRequest);
+
+  // Read response
+  unsigned long start = millis();
+  bool gotResponse = false;
+
+  while (millis() - start < 5000) { // Wait up to 5 seconds for response
+    if (modem.waitResponse("+CADATAIND: 0") == 1) {
+      modem.sendAT("+CARECV=0,1024");
+      modem.waitResponse(); // This will print the HTTP 200 OK to your Serial Monitor
+      gotResponse = true;
+      break;
+    }
+  }
+
+  if (!gotResponse) {
+    SerialMon.println("No response from server, but data was sent.");
+  }
+
+  client.stop();
+}
