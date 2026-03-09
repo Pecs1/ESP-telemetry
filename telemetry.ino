@@ -250,7 +250,9 @@ void getGPSdata(){
   SerialMon.println("Requesting current GPS/GNSS/GLONASS location");
   if (modem.getGPS(&lat, &lon, &speed, &alt, &vsat, &usat, &accuracy,
                     &year, &month, &day, &hour, &min, &sec)) {
-      
+                      // seems like it needs to be like this,
+                      // even tho i dont need all vars
+
     // Create a clean, comma-separated string (CSV)
     proccessedGPS = String(lat, 8) + "," + 
                     String(lon, 8) + "," + 
@@ -260,7 +262,7 @@ void getGPSdata(){
                     String(accuracy) + "," +
                     String(hour) + ":" + 
                     String(min) + ":" + 
-                    String(sec) + ",1";
+                    String(sec);
 
     if (gpsBuffer != "") {
       gpsBuffer += ";"; 
@@ -273,10 +275,11 @@ void getGPSdata(){
   } 
   else {
     SerialMon.println("Couldn't get GPS/GNSS/GLONASS location :C");
-    proccessedGPS = "0,0,0,0,0,0,0:0:0,0";
   }
 
-  // String gps_raw = modem.getGPSraw(); // uncoment for debug if you have issues with GPS
+  SerialMon.println(proccessedGPS);
+
+  // String gps_raw = modem.getGPSraw(); // uncomment for debug if you have issues with GPS
   // SerialMon.println("debug:" + gps_raw + "\n");
 }
 
