@@ -14,8 +14,14 @@
 
 #include <TinyGsmClient.h>
 #include <ArduinoHttpClient.h>
+
+// needed for wifi
 #include <esp_now.h>
 #include <WiFi.h>
+
+// needed for temperature
+#include <OneWire.h>
+#include <DallasTemperature.h>
 
 #define SerialMon Serial
 #define SerialAT  Serial1
@@ -38,7 +44,8 @@
 #define SD_SCLK     14
 #define SD_CS       13
 
-
+// Make sure that the data wire is plugged into definied port
+#define ONE_WIRE_BUS 50
 
 // --- CELLULAR SETTINGS ---
 const char apn[]      = "o2internet"; // your APN
@@ -71,6 +78,13 @@ typedef struct struct_message {
 } struct_message;
 struct_message myData;
 esp_now_peer_info_t peerInfo;
+
+// --- Temperature Setup ---
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature sensors(&oneWire);
+
+int numberOfDevices; // Number of temperature devices found
+DeviceAddress tempDeviceAddress;
 
 void modemPowerOn(){
   pinMode(PWR_PIN, OUTPUT);
@@ -122,10 +136,6 @@ void setup(){
   SerialMon.println("Performing Hard Network Reset...");
   
   // Personal configs that work for me, you might not need these
-    // Reset the profiles
-    modem.sendAT("+CDNSCFG=\"8.8.8.8\",\"8.8.4.4\""); // Set DNS manually just in case
-    modem.waitResponse();
-
     // Define the APN in BOTH slots 0 and 1 (to cover all bases)
     modem.sendAT("+CGDCONT=0,\"IP\",\"o2internet\""); 
     modem.waitResponse();
@@ -140,15 +150,7 @@ void setup(){
     // Try to activate the packet service on Slot 0
     modem.sendAT("+CNACT=0,1"); 
     modem.waitResponse();
-
-    modem.sendAT("+CSSLCFG=\"sslversion\",0,3"); // Set TLS 1.2
-    modem.waitResponse();
-    modem.sendAT("+CSSLCFG=\"sni\",0,\"telemetry.pecs.dev\""); // Required for Cloudflare
-    modem.waitResponse();
-    modem.sendAT("+CASSLCFG=0,\"SSL\",0"); // Bind Link 0 to SSL Context 0
-    modem.waitResponse();
       
-
   // --- CONNECT TO GPRS ---
   SerialMon.print("Connecting to APN: ");
   SerialMon.println(apn);
@@ -172,13 +174,7 @@ void setup(){
   
   delay(5000);
 
-
-
-  /*******************************************
-  ================ WIFI SETUP ================
-  *******************************************/
-
-  // Set device as a Wi-Fi Station
+  // ================= WIFI SETUP ================
   WiFi.mode(WIFI_STA);
 
   // Init ESP-NOW
@@ -204,6 +200,33 @@ void setup(){
 
   modem.sendAT("+SGPIO=0,4,1,1");
   modem.enableGPS();
+
+  sensors.begin(); // Start up the temp lib
+
+  // Grab a count of devices on the wire
+  numberOfDevices = sensors.getDeviceCount();
+
+  // locate devices on the bus
+  Serial.print("Locating devices...");
+  Serial.print("Found ");
+  Serial.print(numberOfDevices, DEC);
+  Serial.println(" devices.");
+
+  // Loop through each device, print out address
+  for(int i=0;i<numberOfDevices; i++) {
+    // Search the wire for address
+    if(sensors.getAddress(tempDeviceAddress, i)) {
+      Serial.print("Found device ");
+      Serial.print(i, DEC);
+      Serial.print(" with address: ");
+      printAddress(tempDeviceAddress);
+      Serial.println();
+		} else {
+		  Serial.print("Found ghost device at ");
+		  Serial.print(i, DEC);
+		  Serial.print(" but could not detect address. Check power and cabling");
+		}
+  }
 }
 
 void loop(){
@@ -215,8 +238,14 @@ void loop(){
     wifiComunication();
   }
 
-  if (currentMillis - previousMillis[1] >= interval[1]) { // loop every 10s
+  if (currentMillis - previousMillis[1] >= interval[1]) { // loop every 5s
     previousMillis[1] = currentMillis;
+
+    temps();
+  }
+
+  if (currentMillis - previousMillis[2] >= interval[2]) { // loop every 10s
+    previousMillis[2] = currentMillis;
 
     getGPSdata();
   }
@@ -265,7 +294,7 @@ void getGPSdata(){
                     String(sec);
 
     if (gpsBuffer != "") {
-      gpsBuffer += ";"; 
+      gpsBuffer += ";";
     }
     gpsBuffer += proccessedGPS;
     
@@ -301,7 +330,6 @@ void wifiComunication() {
   }
 }
 
-// wifi thingie
 // callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   Serial.print("\r\nLast Packet Send Status:\t");
@@ -349,4 +377,32 @@ void sendToAPI(String data) {
   }
 
   client.stop();
+}
+
+void temps(){
+  sensors.requestTemperatures(); // Send the command to get temperatures
+  
+  // Loop through each device, print out temperature data
+  for(int i=0;i<numberOfDevices; i++) {
+    // Search the wire for address
+    if(sensors.getAddress(tempDeviceAddress, i)){
+
+		// Output the device ID
+		Serial.print("Temperature for device: ");
+		Serial.println(i,DEC);
+
+    // Print the data
+    float tempC = sensors.getTempC(tempDeviceAddress);
+    Serial.print("Temp C: ");
+    Serial.print(tempC);
+    }
+  }
+}
+
+// function to print a device address
+void printAddress(DeviceAddress deviceAddress) {
+  for (uint8_t i = 0; i < 8; i++) {
+    if (deviceAddress[i] < 16) Serial.print("0");
+      Serial.print(deviceAddress[i], HEX);
+  }
 }
