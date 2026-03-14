@@ -62,11 +62,13 @@ TinyGsmClientSecure client(modem);
 HttpClient          http(client, server, port);
 
 // Global Vars
-unsigned long previousMillis[] = {0, 0}; 
-const long interval[] = {2000, 10000}; // 0: Wifi, 1: GPS
+unsigned long previousMillis[] = {0, 0, 0, 0}; 
+const long interval[] = {2000, 5000, 10000, 60000}; // 0: Wifi, 1: Temps, 2: GPS, 3: Batt
 String proccessedGPS = "";
 String gpsBuffer = "";
 int batchCounter = 0;
+float currentBatVoltage = 0.0;
+int currentBatPercentage = 0;
 
 // ESP-NOW Setup
 uint8_t broadcastAddress[] = {0xEC, 0xE3, 0x34, 0x8E, 0xEE, 0xCC};
@@ -79,7 +81,7 @@ typedef struct struct_message {
 struct_message myData;
 esp_now_peer_info_t peerInfo;
 
-// --- Temperature Setup ---
+// --- Temperature ---
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
@@ -250,6 +252,12 @@ void loop(){
     getGPSdata();
   }
 
+  if (currentMillis - previousMillis[3] >= interval[3]) { // loop every min
+    previousMillis[3] = currentMillis;
+
+    updateBatteryStatus();
+  }
+
   if (batchCounter >= 6) {
       if (modem.isGprsConnected()) {
           sendToAPI(gpsBuffer);
@@ -404,5 +412,21 @@ void printAddress(DeviceAddress deviceAddress) {
   for (uint8_t i = 0; i < 8; i++) {
     if (deviceAddress[i] < 16) Serial.print("0");
       Serial.print(deviceAddress[i], HEX);
+  }
+}
+
+void updateBatteryStatus() {
+  float v = modem.getBattVoltage() / 1000.0;
+
+  if (v > 2.0) {
+    currentBatVoltage = v;
+    // Naccon 10C 18650s stay strong until 3.4V
+    float pc = (v - 3.4) / (4.2 - 3.4) * 100.0;
+    currentBatPercentage = (int)constrain(pc, 0, 100);
+    
+    SerialMon.printf("Battery: %.2fV | %d%%\n", currentBatVoltage, currentBatPercentage);
+  } else {
+    currentBatVoltage = 0.0;
+    currentBatPercentage = 0;
   }
 }
