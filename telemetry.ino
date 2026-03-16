@@ -9,6 +9,8 @@
   copies or substantial portions of the Software.
 */
 
+#include "env.h"
+
 #define TINY_GSM_MODEM_SIM7000SSL // need to use this instead of SIM7000
 #define TINY_GSM_RX_BUFFER 1024 // Set RX buffer to 1Kb
 
@@ -26,44 +28,20 @@
 #define SerialMon Serial
 #define SerialAT  Serial1
 
-// #include <StreamDebugger.h>
-// StreamDebugger debugger(SerialAT, SerialMon);
-// TinyGsm modem(debugger); // Pass the debugger instead of SerialAT
+#if DEBUG_ENABLED
+  #include <StreamDebugger.h>
+  StreamDebugger debugger(SerialAT, SerialMon);
+  TinyGsm modem(debugger);
+#else
+  TinyGsm modem(SerialAT); 
+#endif
 
-// Pinout
-#define UART_BAUD   115200
-#define PIN_DTR     25
-#define PIN_TX      27
-#define PIN_RX      26
-#define PWR_PIN     4
-
-#define LED_PIN     12
-
-#define SD_MISO     2
-#define SD_MOSI     15
-#define SD_SCLK     14
-#define SD_CS       13
-
-// Make sure that the data wire is plugged into definied port
-#define ONE_WIRE_BUS 50
-
-// --- CELLULAR SETTINGS ---
-const char apn[]      = "o2internet"; // your APN
-const char gprsUser[] = "";
-const char gprsPass[] = "";
-
-const char server[]   = "telemetry.pecs.dev"; // your URL
-const char resource[] = "/ingest.php"; // your endpoint
-const int  port       = 443; // if http then 80
-const char apiKey[]   = "your-key";
-
-TinyGsm modem(SerialAT);
 TinyGsmClientSecure client(modem);
 HttpClient          http(client, server, port);
 
 // Global Vars
 unsigned long previousMillis[] = {0, 0, 0, 0}; 
-const long interval[] = {2000, 5000, 10000, 60000}; // 0: Wifi, 1: Temps, 2: GPS, 3: Batt
+const long interval[] = {INTERVAL_WIFI, INTERVAL_TEMP, INTERVAL_GPS, INTERVAL_BATT};
 String proccessedGPS = "";
 String gpsBuffer = "";
 int batchCounter = 0;
@@ -71,7 +49,6 @@ float currentBatVoltage = 0.0;
 int currentBatPercentage = 0;
 
 // ESP-NOW Setup
-uint8_t broadcastAddress[] = {0xEC, 0xE3, 0x34, 0x8E, 0xEE, 0xCC};
 typedef struct struct_message {
   char a[32];
   int b;
@@ -139,9 +116,9 @@ void setup(){
   
   // Personal configs that work for me, you might not need these
     // Define the APN in BOTH slots 0 and 1 (to cover all bases)
-    modem.sendAT("+CGDCONT=0,\"IP\",\"o2internet\""); 
+    modem.sendAT("+CGDCONT=0,\"IP\",\"" + String(apn) + "\""); 
     modem.waitResponse();
-    modem.sendAT("+CGDCONT=1,\"IP\",\"o2internet\""); 
+    modem.sendAT("+CGDCONT=1,\"IP\",\"" + String(apn) + "\"");
     modem.waitResponse();
 
     // Enable the network to "Auto-Select" (COPS=0)
@@ -258,7 +235,7 @@ void loop(){
     updateBatteryStatus();
   }
 
-  if (batchCounter >= 6) {
+  if (batchCounter >= GPS_BATCH_SIZE) {
       if (modem.isGprsConnected()) {
           sendToAPI(gpsBuffer);
           gpsBuffer = "";
@@ -322,7 +299,7 @@ void getGPSdata(){
 
 void wifiComunication() {
   // Set values to send
-  strcpy(myData.a, "THIS IS A CHAR");
+  strcpy(myData.a, DEVICE_ID);
   myData.b = random(1,20);
   myData.c = 1.2;
   myData.d = false;
@@ -371,7 +348,7 @@ void sendToAPI(String data) {
   unsigned long start = millis();
   bool gotResponse = false;
 
-  while (millis() - start < 5000) { // Wait up to 5 seconds for response
+  while (millis() - start < SERVER_TIMEOUT) { // Wait up to set amount of seconds for response
     if (modem.waitResponse("+CADATAIND: 0") == 1) {
       modem.sendAT("+CARECV=0,1024");
       modem.waitResponse(); // This will print the HTTP 200 OK to your Serial Monitor
@@ -420,8 +397,7 @@ void updateBatteryStatus() {
 
   if (v > 2.0) {
     currentBatVoltage = v;
-    // Naccon 10C 18650s stay strong until 3.4V
-    float pc = (v - 3.4) / (4.2 - 3.4) * 100.0;
+    float pc = (v - BATT_MIN) / (BATT_MAX - BATT_MIN) * 100.0;
     currentBatPercentage = (int)constrain(pc, 0, 100);
     
     SerialMon.printf("Battery: %.2fV | %d%%\n", currentBatVoltage, currentBatPercentage);
