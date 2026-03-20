@@ -25,6 +25,9 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
+// needed to config watchdog
+#include "esp_task_wdt.h" 
+
 #define SerialMon Serial
 #define SerialAT  Serial1
 
@@ -40,8 +43,8 @@ TinyGsmClientSecure client(modem);
 HttpClient          http(client, server, port);
 
 // Global Vars
-unsigned long previousMillis[] = {0, 0, 0, 0}; 
-const long interval[] = {INTERVAL_WIFI, INTERVAL_TEMP, INTERVAL_GPS, INTERVAL_BATT};
+unsigned long previousMillis[] = {0, 0, 0}; 
+const long interval[] = {INTERVAL_WIFI, INTERVAL_TEMP, INTERVAL_GPS};
 String proccessedGPS = "";
 String gpsBuffer = "";
 int batchCounter = 0;
@@ -84,6 +87,12 @@ void modemRestart(){
   delay(1000);
   modemPowerOn();
 }
+
+// --- MULTICORE / FREERTOS VARIABLES ---
+SemaphoreHandle_t lteMutex;
+String sharedGpsBuffer = "";
+bool readyToUpload = false;
+
 
 void setup(){
   SerialMon.begin(115200);
@@ -206,6 +215,19 @@ void setup(){
 		  Serial.print(" but could not detect address. Check power and cabling");
 		}
   }
+
+  // --- INITIALIZE MUTEX & CORE 0 TASK ---
+  lteMutex = xSemaphoreCreateMutex();
+  
+  xTaskCreatePinnedToCore(
+    LTE_Upload_Task,   // Task function
+    "LTE_Task",        // name of task.
+    20000,             // Stack size of task (20KB for Strings/HTTP)
+    NULL,              // parameter of the task
+    1,                 // priority of the task
+    NULL,              // Task handle
+    0                  // pin task to core 0
+  );
 }
 
 void loop(){
@@ -229,18 +251,57 @@ void loop(){
     getGPSdata();
   }
 
-  if (currentMillis - previousMillis[3] >= interval[3]) { // loop every min
-    previousMillis[3] = currentMillis;
-
-    updateBatteryStatus();
-  }
-
   if (batchCounter >= GPS_BATCH_SIZE) {
-      if (modem.isGprsConnected()) {
-          sendToAPI(gpsBuffer);
-          gpsBuffer = "";
-          batchCounter = 0;
+    if (xSemaphoreTake(lteMutex, 0) == pdTRUE) {
+      sharedGpsBuffer = gpsBuffer; // Copy the data to shared memory
+      readyToUpload = true;        // Signal Core 0 to wake up
+      
+      gpsBuffer = "";              // Clear the local buffer immediately
+      batchCounter = 0;            // Reset the counter
+      xSemaphoreGive(lteMutex);
+      Serial.println(">>> Core 1: Data handed off to Core 0.");
+    }
+  }
+}
+
+// --- CORE 0: BACKGROUND LTE TASK ---
+void LTE_Upload_Task(void * pvParameters) {
+
+  esp_task_wdt_config_t twdt_config = {
+    .timeout_ms = 30000,        // 30 seconds
+    .idle_core_mask = (1 << 0), // Specifically watch Core 0
+    .trigger_panic = true       // Reset if it hangs for 30s
+  };
+
+  esp_task_wdt_reconfigure(&twdt_config);
+
+  for(;;) {
+    String dataToSend = "";
+    bool shouldSend = false;
+
+    // check if Core 1 has provided new data
+    if (xSemaphoreTake(lteMutex, (TickType_t)10) == pdTRUE) {
+      if (readyToUpload) {
+        dataToSend = sharedGpsBuffer;
+        shouldSend = true;
+        
+        readyToUpload = false; // Reset the flag
+        sharedGpsBuffer = "";  // Clear shared memory
       }
+      xSemaphoreGive(lteMutex);
+    }
+
+    // If data is ready, do the slow LTE upload here
+    if (shouldSend) {
+      if (modem.isGprsConnected()) {
+        sendToAPI(dataToSend);
+      } else {
+        SerialMon.println("Cannot upload: GPRS disconnected.");
+      }
+    }
+    
+    // Sleep to feed the watchdog timer and prevent a crash
+    vTaskDelay(500 / portTICK_PERIOD_MS); 
   }
 }
 
@@ -349,6 +410,8 @@ void sendToAPI(String data) {
   bool gotResponse = false;
 
   while (millis() - start < SERVER_TIMEOUT) { // Wait up to set amount of seconds for response
+    yield();
+
     if (modem.waitResponse("+CADATAIND: 0") == 1) {
       modem.sendAT("+CARECV=0,1024");
       modem.waitResponse(); // This will print the HTTP 200 OK to your Serial Monitor

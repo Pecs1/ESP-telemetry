@@ -23,7 +23,6 @@
 #define INTERVAL_WIFI  2000
 #define INTERVAL_TEMP  5000
 #define INTERVAL_GPS   10000
-#define INTERVAL_BATT  60000
 
 #define SERVER_TIMEOUT 5000
 
@@ -33,7 +32,7 @@
 #define BATT_MAX 4.2
 
 // --- CELLULAR SETTINGS ---
-static const char apn[]      = "your_APN_NAME";
+static const char apn[]      = "your_APN_NAME"; // some carries dont require
 static const char gprsUser[] = "your_APN_USER"; // some carries dont require
 static const char gprsPass[] = "your_APN_PASS"; // some carries dont require
 
@@ -48,6 +47,6 @@ static const uint8_t broadcastAddress[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 // --- GENERAL ---
 #define GPS_BATCH_SIZE 6
-#define DEBUG_ENABLED  true // or false
+#define DEBUG_ENABLED  false // or true
 
 #endif
