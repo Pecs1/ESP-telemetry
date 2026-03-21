@@ -12,7 +12,7 @@
 #include "env.h"
 
 #define TINY_GSM_MODEM_SIM7000SSL // need to use this instead of SIM7000
-#define TINY_GSM_RX_BUFFER 1024 // Set RX buffer to 1Kb
+#define TINY_GSM_RX_BUFFER 1024   // Set RX buffer to 1Kb
 
 #include <TinyGsmClient.h>
 #include <ArduinoHttpClient.h>
@@ -26,7 +26,7 @@
 #include <DallasTemperature.h>
 
 // needed to config watchdog
-#include "esp_task_wdt.h" 
+#include "esp_task_wdt.h"
 
 #define SerialMon Serial
 #define SerialAT  Serial1
@@ -43,7 +43,7 @@ TinyGsmClientSecure client(modem);
 HttpClient          http(client, server, port);
 
 // Global Vars
-unsigned long previousMillis[] = {0, 0, 0}; 
+unsigned long previousMillis[] = {0, 0, 0};
 const long interval[] = {INTERVAL_WIFI, INTERVAL_TEMP, INTERVAL_GPS};
 String proccessedGPS = "";
 String gpsBuffer = "";
@@ -68,21 +68,21 @@ DallasTemperature sensors(&oneWire);
 int numberOfDevices; // Number of temperature devices found
 DeviceAddress tempDeviceAddress;
 
-void modemPowerOn(){
+void modemPowerOn() {
   pinMode(PWR_PIN, OUTPUT);
   digitalWrite(PWR_PIN, LOW);
   delay(1000);
   digitalWrite(PWR_PIN, HIGH);
 }
 
-void modemPowerOff(){
+void modemPowerOff() {
   pinMode(PWR_PIN, OUTPUT);
   digitalWrite(PWR_PIN, LOW);
   delay(1500);
   digitalWrite(PWR_PIN, HIGH);
 }
 
-void modemRestart(){
+void modemRestart() {
   modemPowerOff();
   delay(1000);
   modemPowerOn();
@@ -94,7 +94,7 @@ String sharedGpsBuffer = "";
 bool readyToUpload = false;
 
 
-void setup(){
+void setup() {
   SerialMon.begin(115200);
   SerialMon.println("Place your board outside to catch satelite signal");
 
@@ -138,7 +138,7 @@ void setup(){
     // Try to activate the packet service on Slot 0
     modem.sendAT("+CNACT=0,1"); 
     modem.waitResponse();
-      
+
   // --- CONNECT TO GPRS ---
   SerialMon.print("Connecting to APN: ");
   SerialMon.println(apn);
@@ -159,7 +159,6 @@ void setup(){
   String modemInfo = modem.getModemInfo();
   delay(500);
   SerialMon.println("Modem Info: " + modemInfo);
-  
   delay(5000);
 
   // ================= WIFI SETUP ================
@@ -174,14 +173,14 @@ void setup(){
   // Once ESPNow is successfully Init, we will register for Send CB to
   // get the status of Trasnmitted packet
   esp_now_register_send_cb(esp_now_send_cb_t(OnDataSent));
-  
+
   // Register peer
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  peerInfo.channel = 0;  
+  peerInfo.channel = 0;
   peerInfo.encrypt = false;
-  
-  // Add peer        
-  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+
+  // Add peer
+  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add peer");
     return;
   }
@@ -201,36 +200,36 @@ void setup(){
   Serial.println(" devices.");
 
   // Loop through each device, print out address
-  for(int i=0;i<numberOfDevices; i++) {
+  for (int i = 0; i < numberOfDevices; i++) {
     // Search the wire for address
-    if(sensors.getAddress(tempDeviceAddress, i)) {
+    if (sensors.getAddress(tempDeviceAddress, i)) {
       Serial.print("Found device ");
       Serial.print(i, DEC);
       Serial.print(" with address: ");
       printAddress(tempDeviceAddress);
       Serial.println();
-		} else {
-		  Serial.print("Found ghost device at ");
-		  Serial.print(i, DEC);
-		  Serial.print(" but could not detect address. Check power and cabling");
-		}
+    } else {
+      Serial.print("Found ghost device at ");
+      Serial.print(i, DEC);
+      Serial.print(" but could not detect address. Check power and cabling");
+    }
   }
 
   // --- INITIALIZE MUTEX & CORE 0 TASK ---
   lteMutex = xSemaphoreCreateMutex();
-  
+
   xTaskCreatePinnedToCore(
-    LTE_Upload_Task,   // Task function
-    "LTE_Task",        // name of task.
-    20000,             // Stack size of task (20KB for Strings/HTTP)
-    NULL,              // parameter of the task
-    1,                 // priority of the task
-    NULL,              // Task handle
-    0                  // pin task to core 0
+    LTE_Upload_Task,  // Task function
+    "LTE_Task",       // name of task.
+    20000,            // Stack size of task (20KB for Strings/HTTP)
+    NULL,             // parameter of the task
+    1,                // priority of the task
+    NULL,             // Task handle
+    0                 // pin task to core 0
   );
 }
 
-void loop(){
+void loop() {
   unsigned long currentMillis = millis();
 
   if (currentMillis - previousMillis[0] >= interval[0]) { // loop every 2s
@@ -255,7 +254,7 @@ void loop(){
     if (xSemaphoreTake(lteMutex, 0) == pdTRUE) {
       sharedGpsBuffer = gpsBuffer; // Copy the data to shared memory
       readyToUpload = true;        // Signal Core 0 to wake up
-      
+
       gpsBuffer = "";              // Clear the local buffer immediately
       batchCounter = 0;            // Reset the counter
       xSemaphoreGive(lteMutex);
@@ -265,7 +264,7 @@ void loop(){
 }
 
 // --- CORE 0: BACKGROUND LTE TASK ---
-void LTE_Upload_Task(void * pvParameters) {
+void LTE_Upload_Task(void *pvParameters) {
 
   esp_task_wdt_config_t twdt_config = {
     .timeout_ms = 30000,        // 30 seconds
@@ -275,7 +274,7 @@ void LTE_Upload_Task(void * pvParameters) {
 
   esp_task_wdt_reconfigure(&twdt_config);
 
-  for(;;) {
+  for (;;) {
     String dataToSend = "";
     bool shouldSend = false;
 
@@ -284,7 +283,7 @@ void LTE_Upload_Task(void * pvParameters) {
       if (readyToUpload) {
         dataToSend = sharedGpsBuffer;
         shouldSend = true;
-        
+
         readyToUpload = false; // Reset the flag
         sharedGpsBuffer = "";  // Clear shared memory
       }
@@ -299,13 +298,13 @@ void LTE_Upload_Task(void * pvParameters) {
         SerialMon.println("Cannot upload: GPRS disconnected.");
       }
     }
-    
+
     // Sleep to feed the watchdog timer and prevent a crash
-    vTaskDelay(500 / portTICK_PERIOD_MS); 
+    vTaskDelay(500 / portTICK_PERIOD_MS);
   }
 }
 
-void getGPSdata(){
+void getGPSdata() {
 
   modem.enableGPS();
   float lat      = 0;
@@ -343,12 +342,11 @@ void getGPSdata(){
       gpsBuffer += ";";
     }
     gpsBuffer += proccessedGPS;
-    
+
     batchCounter++;
     SerialMon.println("Point added to buffer (" + String(batchCounter) + "/6)");
 
-  } 
-  else {
+  } else {
     SerialMon.println("Couldn't get GPS/GNSS/GLONASS location :C");
   }
 
@@ -361,17 +359,16 @@ void getGPSdata(){
 void wifiComunication() {
   // Set values to send
   strcpy(myData.a, DEVICE_ID);
-  myData.b = random(1,20);
+  myData.b = random(1, 20);
   myData.c = 1.2;
   myData.d = false;
-  
+
   // Send message via ESP-NOW
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
-   
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *)&myData, sizeof(myData));
+
   if (result == ESP_OK) {
     Serial.println("Wifi packet sent with success \n");
-  }
-  else {
+  } else {
     Serial.println("Wifi packet error, couldnt send the data \n");
   }
 }
@@ -384,7 +381,7 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 
 void sendToAPI(String data) {
   if (data == "") return;
-  
+
   SerialMon.println("Sending via Single-Block Transmission...");
 
   // Build the entire request string manually
@@ -427,22 +424,22 @@ void sendToAPI(String data) {
   client.stop();
 }
 
-void temps(){
+void temps() {
   sensors.requestTemperatures(); // Send the command to get temperatures
-  
+
   // Loop through each device, print out temperature data
-  for(int i=0;i<numberOfDevices; i++) {
+  for (int i = 0; i < numberOfDevices; i++) {
     // Search the wire for address
-    if(sensors.getAddress(tempDeviceAddress, i)){
+    if (sensors.getAddress(tempDeviceAddress, i)) {
 
-		// Output the device ID
-		Serial.print("Temperature for device: ");
-		Serial.println(i,DEC);
+      // Output the device ID
+      Serial.print("Temperature for device: ");
+      Serial.println(i, DEC);
 
-    // Print the data
-    float tempC = sensors.getTempC(tempDeviceAddress);
-    Serial.print("Temp C: ");
-    Serial.print(tempC);
+      // Print the data
+      float tempC = sensors.getTempC(tempDeviceAddress);
+      Serial.print("Temp C: ");
+      Serial.print(tempC);
     }
   }
 }
@@ -451,7 +448,7 @@ void temps(){
 void printAddress(DeviceAddress deviceAddress) {
   for (uint8_t i = 0; i < 8; i++) {
     if (deviceAddress[i] < 16) Serial.print("0");
-      Serial.print(deviceAddress[i], HEX);
+    Serial.print(deviceAddress[i], HEX);
   }
 }
 
@@ -461,8 +458,7 @@ void batteryStatus() {
 
   if (currentBatVoltage < 1.0) {
     Serial.println("Battery: Most Likely Using USB Power");
-  } 
-  else if (currentBatVoltage > (BATT_MIN-0.4) && currentBatVoltage < (BATT_MAX+0.4)) {
+  } else if (currentBatVoltage > (BATT_MIN - 0.4) && currentBatVoltage < (BATT_MAX + 0.4)) {
     float pc = (currentBatVoltage - BATT_MIN) / (BATT_MAX - BATT_MIN) * 100.0;
     currentBatPercentage = (int)constrain(pc, 0, 100);
     Serial.printf("Battery: %.2fV | %d%%\n", currentBatVoltage, currentBatPercentage);
