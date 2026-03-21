@@ -455,17 +455,18 @@ void printAddress(DeviceAddress deviceAddress) {
   }
 }
 
-void updateBatteryStatus() {
-  float v = modem.getBattVoltage() / 1000.0;
+void batteryStatus() {
+  int raw = analogRead(BATT_PIN);
+  currentBatVoltage = (raw / 4095.0) * 2.0 * 3.3 * BATT_CALIBRATION;
 
-  if (v > 2.0) {
-    currentBatVoltage = v;
-    float pc = (v - BATT_MIN) / (BATT_MAX - BATT_MIN) * 100.0;
+  if (currentBatVoltage < 1.0) {
+    Serial.println("Battery: Most Likely Using USB Power");
+  } 
+  else if (currentBatVoltage > (BATT_MIN-0.4) && currentBatVoltage < (BATT_MAX+0.4)) {
+    float pc = (currentBatVoltage - BATT_MIN) / (BATT_MAX - BATT_MIN) * 100.0;
     currentBatPercentage = (int)constrain(pc, 0, 100);
-    
-    SerialMon.printf("Battery: %.2fV | %d%%\n", currentBatVoltage, currentBatPercentage);
+    Serial.printf("Battery: %.2fV | %d%%\n", currentBatVoltage, currentBatPercentage);
   } else {
-    currentBatVoltage = 0.0;
-    currentBatPercentage = 0;
+    Serial.println("Battery: Bad Values / ERROR :C");
   }
 }

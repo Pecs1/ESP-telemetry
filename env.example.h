@@ -15,6 +15,8 @@
 #define SD_SCLK      14
 #define SD_CS        13
 
+#define BATT_PIN     35
+
 // Make sure that the data wire is plugged into definied port
 #define ONE_WIRE_BUS 50
 
@@ -30,6 +32,7 @@
 // --- BATTERY SETTINGS ---
 #define BATT_MIN 3.4
 #define BATT_MAX 4.2
+#define BATT_CALIBRATION 1.1
 
 // --- CELLULAR SETTINGS ---
 static const char apn[]      = "your_APN_NAME"; // some carries dont require
