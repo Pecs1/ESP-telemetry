@@ -21,10 +21,6 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-// needed for temperature
-#include <OneWire.h>
-#include <DallasTemperature.h>
-
 // needed to config watchdog
 #include "esp_task_wdt.h"
 
@@ -43,8 +39,8 @@ TinyGsmClientSecure client(modem);
 HttpClient          http(client, server, port);
 
 // Global Vars
-unsigned long previousMillis[] = {0, 0, 0};
-const long interval[] = {INTERVAL_WIFI, INTERVAL_TEMP, INTERVAL_GPS};
+unsigned long previousMillis[] = {0, 0};
+const long interval[] = {INTERVAL_WIFI, INTERVAL_GPS};
 String proccessedGPS = "";
 String gpsBuffer = "";
 int batchCounter = 0;
@@ -60,13 +56,6 @@ typedef struct struct_message {
 } struct_message;
 struct_message myData;
 esp_now_peer_info_t peerInfo;
-
-// --- Temperature ---
-OneWire oneWire(ONE_WIRE_BUS);
-DallasTemperature sensors(&oneWire);
-
-int numberOfDevices; // Number of temperature devices found
-DeviceAddress tempDeviceAddress;
 
 void modemPowerOn() {
   pinMode(PWR_PIN, OUTPUT);
@@ -188,33 +177,6 @@ void setup() {
   modem.sendAT("+SGPIO=0,4,1,1");
   modem.enableGPS();
 
-  sensors.begin(); // Start up the temp lib
-
-  // Grab a count of devices on the wire
-  numberOfDevices = sensors.getDeviceCount();
-
-  // locate devices on the bus
-  Serial.print("Locating devices...");
-  Serial.print("Found ");
-  Serial.print(numberOfDevices, DEC);
-  Serial.println(" devices.");
-
-  // Loop through each device, print out address
-  for (int i = 0; i < numberOfDevices; i++) {
-    // Search the wire for address
-    if (sensors.getAddress(tempDeviceAddress, i)) {
-      Serial.print("Found device ");
-      Serial.print(i, DEC);
-      Serial.print(" with address: ");
-      printAddress(tempDeviceAddress);
-      Serial.println();
-    } else {
-      Serial.print("Found ghost device at ");
-      Serial.print(i, DEC);
-      Serial.print(" but could not detect address. Check power and cabling");
-    }
-  }
-
   // --- INITIALIZE MUTEX & CORE 0 TASK ---
   lteMutex = xSemaphoreCreateMutex();
 
@@ -238,14 +200,8 @@ void loop() {
     wifiComunication();
   }
 
-  if (currentMillis - previousMillis[1] >= interval[1]) { // loop every 5s
+  if (currentMillis - previousMillis[1] >= interval[1]) { // loop every 10s
     previousMillis[1] = currentMillis;
-
-    temps();
-  }
-
-  if (currentMillis - previousMillis[2] >= interval[2]) { // loop every 10s
-    previousMillis[2] = currentMillis;
 
     getGPSdata();
   }
@@ -351,9 +307,6 @@ void getGPSdata() {
   }
 
   SerialMon.println(proccessedGPS);
-
-  // String gps_raw = modem.getGPSraw(); // uncomment for debug if you have issues with GPS
-  // SerialMon.println("debug:" + gps_raw + "\n");
 }
 
 void wifiComunication() {
@@ -422,34 +375,6 @@ void sendToAPI(String data) {
   }
 
   client.stop();
-}
-
-void temps() {
-  sensors.requestTemperatures(); // Send the command to get temperatures
-
-  // Loop through each device, print out temperature data
-  for (int i = 0; i < numberOfDevices; i++) {
-    // Search the wire for address
-    if (sensors.getAddress(tempDeviceAddress, i)) {
-
-      // Output the device ID
-      Serial.print("Temperature for device: ");
-      Serial.println(i, DEC);
-
-      // Print the data
-      float tempC = sensors.getTempC(tempDeviceAddress);
-      Serial.print("Temp C: ");
-      Serial.print(tempC);
-    }
-  }
-}
-
-// function to print a device address
-void printAddress(DeviceAddress deviceAddress) {
-  for (uint8_t i = 0; i < 8; i++) {
-    if (deviceAddress[i] < 16) Serial.print("0");
-    Serial.print(deviceAddress[i], HEX);
-  }
 }
 
 void batteryStatus() {

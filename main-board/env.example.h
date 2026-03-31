@@ -17,13 +17,9 @@
 
 #define BATT_PIN     35
 
-// Make sure that the data wire is plugged into definied port
-#define ONE_WIRE_BUS 50
-
 
 // --- TIMING SETTINGS (ms) ---
 #define INTERVAL_WIFI  2000
-#define INTERVAL_TEMP  5000
 #define INTERVAL_GPS   10000
 
 #define SERVER_TIMEOUT 5000
