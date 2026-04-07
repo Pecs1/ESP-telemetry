@@ -41,7 +41,7 @@ HttpClient          http(client, server, port);
 // Global Vars
 unsigned long previousMillis[] = {0, 0};
 const long interval[] = {INTERVAL_WIFI, INTERVAL_GPS};
-String proccessedGPS = "";
+String processedGPS = "";
 String gpsBuffer = "";
 int batchCounter = 0;
 float currentBatVoltage = 0.0;
@@ -284,7 +284,7 @@ void getGPSdata() {
                       // even tho i dont need all vars
 
     // Create a clean, comma-separated string (CSV)
-    proccessedGPS = String(lat, 8) + "," + 
+    processedGPS = String(lat, 8) + "," + 
                     String(lon, 8) + "," + 
                     String(speed) + "," + 
                     String(alt) + "," + 
@@ -297,7 +297,7 @@ void getGPSdata() {
     if (gpsBuffer != "") {
       gpsBuffer += ";";
     }
-    gpsBuffer += proccessedGPS;
+    gpsBuffer += processedGPS;
 
     batchCounter++;
     SerialMon.println("Point added to buffer (" + String(batchCounter) + "/6)");
@@ -306,7 +306,7 @@ void getGPSdata() {
     SerialMon.println("Couldn't get GPS/GNSS/GLONASS location :C");
   }
 
-  SerialMon.println(proccessedGPS);
+  SerialMon.println(processedGPS);
 }
 
 void wifiComunication() {
