@@ -20,7 +20,7 @@
 
 // --- TIMING SETTINGS (ms) ---
 #define INTERVAL_WIFI  2000
-#define INTERVAL_GPS   10000
+#define INTERVAL_GPS   1000
 
 #define SERVER_TIMEOUT 5000
 

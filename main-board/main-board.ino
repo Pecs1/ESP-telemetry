@@ -200,7 +200,7 @@ void loop() {
     wifiComunication();
   }
 
-  if (currentMillis - previousMillis[1] >= interval[1]) { // loop every 10s
+  if (currentMillis - previousMillis[1] >= interval[1]) { // loop every 1s
     previousMillis[1] = currentMillis;
 
     getGPSdata();
