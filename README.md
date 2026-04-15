@@ -25,7 +25,6 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 ### Sensors:
 
 - **DS18B20** for temperature
-- **WCS1500-1662** for current sensor
 
 ## Developing
 
