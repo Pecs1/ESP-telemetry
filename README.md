@@ -29,8 +29,9 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 ## Developing
 
 1. Navigate to a board directory
-2. copy and rename `env.example.h` to `env.h`
-3. Put your credentials into the `env.h`.
+2. copy and remove the `.example` from `*.env.example.h`
+     > for example `main.env.example.h` to `main.env.h`
+3. Put your credentials into the `*.env.h`.
 
 ### Credits
 

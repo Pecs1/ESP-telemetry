@@ -1,5 +1,5 @@
-#ifndef ENV_H
-#define ENV_H
+#ifndef MAIN_ENV_H
+#define MAIN_ENV_H
 
 // Pinout
 #define UART_BAUD    115200

@@ -4,7 +4,7 @@
 // PURPOSE: use address array of multiple DS18B20
 //     URL: https://github.com/milesburton/Arduino-Temperature-Control-Library
 
-#include "env.h"
+#include "temps.env.h"
 
 #include <OneWire.h>
 #include <DallasTemperature.h>

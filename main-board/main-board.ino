@@ -9,7 +9,7 @@
   copies or substantial portions of the Software.
 */
 
-#include "env.h"
+#include "main.env.h"
 
 #define TINY_GSM_MODEM_SIM7000SSL // need to use this instead of SIM7000
 #define TINY_GSM_RX_BUFFER 1024   // Set RX buffer to 1Kb
