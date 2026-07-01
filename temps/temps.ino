@@ -27,16 +27,15 @@ void setup()
 void loop()
 {
   sensors.requestTemperatures();
+  // argument 1 = sensor address variable, argument 2 = printed sensor name
+  printSensorTemperature(sensor_1, "Sensor#1");
 
-  printSensorTemperature(sensor_1,"Sensor#1"); // argument 1 = sensor address variable, argument 2 = printed sensor name
-
-  printSensorTemperature(sensor_2,"Sensor#2"); 
+  printSensorTemperature(sensor_2, "Sensor#2");
   delay (5000); // wait 5 seconds before next print
 }
 
 // function to print sensor temperature
-void printSensorTemperature(DeviceAddress sensor_x, String sensor_name)
-{
+void printSensorTemperature(DeviceAddress sensor_x, String sensor_name) {
   printAddress(sensor_x);
   Serial.println();
   Serial.print("Temperature " + sensor_name + ": ");
@@ -46,14 +45,18 @@ void printSensorTemperature(DeviceAddress sensor_x, String sensor_name)
 }
 
 // function to print sensor address
-void printAddress(DeviceAddress sensor_x)
-{
+void printAddress(DeviceAddress sensor_x) {
   Serial.print("Device address: ");
-    for (uint8_t i = 0; i < 8; i++)
-    {
+    for (uint8_t i = 0; i < 8; i++) {
       Serial.print("0x");
-      if (sensor_x[i] < 16) Serial.print("0");
+      
+      if (sensor_x[i] < 16) {
+        Serial.print("0");
+      }
+      
       Serial.print(sensor_x[i], HEX);
-      if (i < 7) Serial.print(", ");
-    }    
+      if (i < 7) {
+        Serial.print(", ");
+      }
+    }
 }
