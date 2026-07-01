@@ -9,7 +9,6 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 - ArduinoHttpClient
 - DallasTemperature
 - OneWire
-- TinyGSM
 
 #### Optionally:
 
@@ -18,13 +17,18 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 
 ### Microcontrollers:
 
-- `main_board.ino`: 
-- other `.ino` files: **ESP32-WROOM-32U**
+Used boards in these directories
+- `main`:     not decided yet :/
+- `temps`:  **ESP32-WROOM-32U**
+- `GPS`:    **ESP32-WROOM-32U**
+- `R-LoRa`: **LilyGO TTGO LoRa32**
+- `S-LoRa`: **LilyGO TTGO LoRa32**
 
 
 ### Sensors:
 
-- **DS18B20** for temperature
+- **DS18B20** (Temperature)
+- **SparkFun GPS NEO-M9N, U.FL (Qwiic)** (GPS)
 
 ## Developing
 
