@@ -18,7 +18,7 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 
 ### Microcontrollers:
 
-- `main_board.ino`: **LILYGO T-SIM7000G** (ESP32 + GSM/GPS)
+- `main_board.ino`: 
 - other `.ino` files: **ESP32-WROOM-32U**
 
 
