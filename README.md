@@ -27,8 +27,8 @@ Used boards in these directories
 
 ### Sensors:
 
-- **DS18B20** (Temperature)
-- **SparkFun GPS NEO-M9N, U.FL (Qwiic)** (GPS)
+- **DS18B20** -> Temperature
+- **SparkFun GPS NEO-M9N, U.FL (Qwiic)** -> GPS
 
 ## Developing
 
