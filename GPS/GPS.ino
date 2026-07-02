@@ -3,6 +3,7 @@
 // for wifi communication
 #include <esp_now.h>
 #include <WiFi.h>
+#include <WiFiAP.h>
 
 // persistant storage between reboots
 #include <Preferences.h>
@@ -28,17 +29,81 @@ void setup() {
 
           // write to persistant storage
           prefs.putBool("ready", true);
-          prefs.putBool("is_normal", true);
+          prefs.putUChar("current_mode", 0);
 
           prefs.end(); // close RW
           prefs.begin("sys_state", RO); // reopen in RO
      }
 
-     isNormal = prefs.getBool("is_normal");
+     uint8_t savedMode = prefs.getUChar("current_mode");
+     currentMode = (SystemMode)savedMode;
+
      prefs.end(); // close RO
 
+
+     switch (currentMode) {
+       case NORMAL:
+          initNormal();
+          break;
+
+       case MAINTENANCE:
+          initMaintenance();
+          break;
+          
+       default:
+          initFailSafe();
+          break;
+     }
 }
 
 void loop() {
 
+}
+
+void initNormal() {
+     // docs: https://docs.arduino.cc/tutorials/nano-esp32/esp-now/#code
+     // set as WiFi Station
+     WiFi.mode(WIFI_STA);
+
+     // Init ESP-NOW
+     if (esp_now_init() != ESP_OK) {
+          Serial.println("Error initializing ESP-NOW");
+          return;
+     }
+     // get status of transmitted packet
+     esp_now_register_send_cb(OnDataSent);
+
+     // clear out data just in case
+     memset(&peerInfo, 0, sizeof(peerInfo));
+
+     // copy the peer address into peer structure
+     memcpy(peerInfo.peer_addr, mainAddress, 6);
+
+     peerInfo.channel = 0;  
+     peerInfo.encrypt = false;
+
+     // Add peer        
+     if (esp_now_add_peer(&peerInfo) != ESP_OK){
+          Serial.println("Failed to add main board!");
+          return;
+     }
+}
+
+void initMaintenance() {
+     // docs: https://docs.espressif.com/projects/arduino-esp32/en/latest/api/wifi.html#wi-fi-ap-example
+     // set to AP
+     WiFi.softAP(SSID, PASSWD);
+}
+
+void initFailSafe() {
+
+}
+
+// callback when data is sent
+void OnDataSent(const wifi_tx_info_t *tx_info, esp_now_send_status_t status) {
+     if (status == ESP_NOW_SEND_SUCCESS) {
+          currentTxState = TX_SUCCESS;
+     } else {
+          currentTxState = TX_FAILED;
+     }
 }
