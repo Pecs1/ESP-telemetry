@@ -40,3 +40,8 @@ Used boards in these directories
 ### Credits
 
 This project incorporates logic and inspiration from various open-source contributors and friends within the Shell Eco-marathon community.
+
+
+## License
+
+This project is licensed under the [MPL-2.0](https://github.com/Pecs1/ESP-telemetry/blob/main/LICENSE)
