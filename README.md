@@ -4,16 +4,11 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 
 ## Prerequisites
 
-### Make sure you have installed these libraries:
+### Make sure you have installed these external libraries:
 
-- ArduinoHttpClient
-- DallasTemperature
-- OneWire
-
-#### Optionally:
-
-- StreamDebugger
-
+- [**DallasTemperature**](https://github.com/milesburton/Arduino-Temperature-Control-Library)
+- [**OneWire**](https://github.com/PaulStoffregen/OneWire)
+- [**ESP32-OTA**](https://github.com/scottchiefbaker/ESP-WebOTA) (WebOTA)
 
 ### Microcontrollers:
 
