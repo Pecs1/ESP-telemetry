@@ -6,7 +6,8 @@
 
 // for maintenance mode
 #include <WiFiAP.h>
-
+#include <WebOTA.h>
+#include <ESPmDNS.h>
 
 // persistant storage between reboots
 #include <Preferences.h>
@@ -67,7 +68,7 @@ void loop() {
       return;
 
     case MAINTENANCE:
-
+      webota.handle();
       return;
 
     default:
@@ -80,6 +81,10 @@ void initNormal() {
   // docs: https://docs.arduino.cc/tutorials/nano-esp32/esp-now/#code
   // set as WiFi Station
   WiFi.mode(WIFI_STA);
+
+  while (!WiFi.STA.started()) {
+    delay(100);
+  }
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
@@ -101,7 +106,7 @@ void initNormal() {
   // Add peer
   if (esp_now_add_peer(&peerInfo) != ESP_OK) {
     Serial.println("Failed to add main board!");
-    return;
+    ESP.restart();
   }
 }
 
@@ -109,7 +114,16 @@ void initMaintenance() {
   // docs: https://docs.espressif.com/projects/arduino-esp32/en/latest/api/wifi.html#wi-fi-ap-example
   // set to AP
   WiFi.mode(WIFI_AP);
-  WiFi.softAP(SSID, PASSWD);
+  WiFi.softAP(MAINT_SSID, SPECIAL_PASSWD);
+
+  if (!MDNS.begin(TEAM_NAME)) {
+    Serial.println("Error setting up MDNS responder!");
+    while (1) {
+      delay(1000);
+    }
+  }
+  webota.init(80, "/update");  // start webota
+  MDNS.addService("http", "tcp", 80);
 }
 
 void initFailSafe() {

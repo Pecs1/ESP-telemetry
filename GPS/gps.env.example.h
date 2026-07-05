@@ -6,8 +6,8 @@
 const uint16_t MAINTENANCE_PIN = 1234;
 
 // AP mode
-const char* SSID   = "Pecs1 - Maintenance GPS";
-const char* PASSWD = "yourPassword"; // must be more than 7 characters
+const char* MAINT_SSID   = "Pecs1 - Maintenance GPS";
+const char* SPECIAL_PASSWD = "yourPassword"; // must be more than 7 characters
 
 
 enum SystemMode : uint8_t {
