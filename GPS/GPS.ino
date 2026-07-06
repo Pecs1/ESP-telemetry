@@ -25,16 +25,17 @@ void setup() {
 
   // docs/example: https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/preferences.html
 
+  prefs.begin("sys_state", RW);  // open in RW
+
   // check if persistant storage has been created before
   if (prefs.isKey("ready") == false) {
-    prefs.begin("sys_state", RW);  // reopen in RW
 
     // write to persistant storage
     prefs.putBool("ready", true);
     prefs.putUChar("current_mode", 0);
-
-    prefs.end();                   // close RW
   }
+
+  prefs.end();  // close RW
 
 
   prefs.begin("sys_state", RO); // open in RO
