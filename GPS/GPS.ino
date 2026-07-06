@@ -9,7 +9,7 @@
 #include <WebOTA.h>
 #include <ESPmDNS.h>
 
-// persistant storage between reboots
+// for internal logic
 #include <Preferences.h>
 
 
@@ -23,13 +23,10 @@ Preferences prefs;
 void setup() {
   Serial.begin(115200);
 
-  // docs: https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/preferences.html
-  // read-only the persistant storage
-  prefs.begin("sys_state", RO);
+  // docs/example: https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/preferences.html
 
-  // check if persistant storage has been created
+  // check if persistant storage has been created before
   if (prefs.isKey("ready") == false) {
-    prefs.end();                   // close RO
     prefs.begin("sys_state", RW);  // reopen in RW
 
     // write to persistant storage
@@ -37,9 +34,12 @@ void setup() {
     prefs.putUChar("current_mode", 0);
 
     prefs.end();                   // close RW
-    prefs.begin("sys_state", RO);  // reopen in RO
   }
 
+
+  prefs.begin("sys_state", RO); // open in RO
+
+  // load the saved mode from persistant storage
   uint8_t savedMode = prefs.getUChar("current_mode");
   currentMode = (SystemMode)savedMode;
 
