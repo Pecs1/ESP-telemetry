@@ -2,7 +2,7 @@
 
 Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-Website) for [Shell eco-marathon](https://www.shellecomarathon.com/) competition
 
-> ![NOTE]
+> ![Note]
 > I'll be slowly migrating to pioarduino, so expect some breaking changes
 
 ## Prerequisites
@@ -30,10 +30,7 @@ Used boards in these directories
 
 ## Developing
 
-1. Navigate to a board directory
-2. copy and remove the `.example` from `*.env.example.h`
-     > for example `main.env.example.h` to `main.env.h`
-3. Put your credentials into the `*.env.h`.
+TODO: add dev guide
 
 ### Credits
 
