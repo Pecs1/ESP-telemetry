@@ -13,3 +13,9 @@ IndentCaseLabels: true
 
 SortIncludes: true
 IncludeBlocks: Regroup
+
+AlignConsecutiveAssignments: Consecutive
+AlignConsecutiveDeclarations: None
+Cpp11BracedListStyle: false
+SpacesInContainerLiterals: true
+AllowShortFunctionsOnASingleLine: Empty
