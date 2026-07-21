@@ -2,6 +2,9 @@
 
 Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-Website) for [Shell eco-marathon](https://www.shellecomarathon.com/) competition
 
+> ![NOTE]
+> I'll be slowly migrating to pioarduino, so expect some breaking changes
+
 ## Prerequisites
 
 ### Make sure you have installed these external libraries:

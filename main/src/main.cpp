@@ -1,7 +1,4 @@
-#include "main.env.h"
-
-#include <esp_now.h>
-#include <WiFi.h>
+#include <Arduino.h>
 
 // the rest ill see, when the new board will be bought & delivered :/ 
 void setup() {
