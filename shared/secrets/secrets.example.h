@@ -1,8 +1,7 @@
 #ifndef SECRETS_H
 #define SECRETS_H
 
-// set your 4 digit passcode
-// each passcode must be the same between boards!
+// set your 4 digit passcode for changing modes
 const uint16_t MAINTENANCE_PASSCODE = 1234;
 
 // password for WiFi in AP mode
