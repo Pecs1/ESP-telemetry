@@ -2,7 +2,7 @@
 
 Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-Website) for [Shell eco-marathon](https://www.shellecomarathon.com/) competition
 
-> ![Note]
+> [!Important]
 > I'll be slowly migrating to pioarduino, so expect some breaking changes
 
 ## Prerequisites

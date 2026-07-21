@@ -1,6 +1,6 @@
-/*/*.env.h
+/shared/secrets/secrets.h
 /*/build
-/test
+boards/test
 
 /.pio
 /.vscode/
