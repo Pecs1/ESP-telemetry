@@ -19,3 +19,4 @@ AlignConsecutiveDeclarations: None
 Cpp11BracedListStyle: false
 SpacesInContainerLiterals: true
 AllowShortFunctionsOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: false
