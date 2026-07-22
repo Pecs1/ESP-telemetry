@@ -1,6 +1,6 @@
 /shared/secrets/secrets.h
 /*/build
-boards/test
+boards/.test/
 
 /.pio
 /.vscode/
