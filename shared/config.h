@@ -1,7 +1,6 @@
-#ifndef CONFIG_H
-#define CONFIG_H
+#pragma once
 
-// set your passcode in here:
+// set your passcodes/secrets in here:
 #include "./secrets/secrets.h"
 
 // team name for every board
@@ -10,5 +9,3 @@
 // for Preferences
 #define RW false // read-write
 #define RO true  // read-only
-
-#endif

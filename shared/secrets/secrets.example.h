@@ -1,5 +1,6 @@
-#ifndef SECRETS_H
-#define SECRETS_H
+#pragma once
+
+#include <cstdint>
 
 // set your 4 digit passcode for changing modes
 const uint16_t MAINTENANCE_PASSCODE = 1234;
@@ -16,5 +17,3 @@ uint8_t tempsAddress[] = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 // temp sensors
 uint8_t sensor_1[8] = { 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 uint8_t sensor_2[8] = { 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
-
-#endif
