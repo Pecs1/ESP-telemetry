@@ -14,9 +14,18 @@
 // you must set this at the top
 #include <Arduino.h>
 
+// you must set this before including config.h
+// used to differentiate the boards when they are in AP mode
+// must (welp should) be unique
+#define BOARD_NAME "YourBoard"
+
 // you will find some basic configs here
 // also your secrets are imported within this header
 #include <config.h>
+
+// so far used only to setup wifi
+// either in STA or AP mode
+#include <wifi.h>
 
 void setup() {}
 
