@@ -1,6 +1,10 @@
 #pragma once
 
+// DO NOT CHANGE ANYTHING HERE
+// you have been warned...
+
 // set your passcodes/secrets in here:
+// if you cant find it, copy and rename `secrets.example.h` to `secrets.h`
 #include "./secrets/secrets.h"
 
 // for Preferences
