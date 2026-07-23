@@ -2,6 +2,10 @@
 
 #include <cstdint>
 
+// team name for every board
+// i mean... its not a secret really... but shhh
+#define TEAM_NAME "Pecs1"
+
 // set your 4 digit passcode for changing modes
 const uint16_t MAINTENANCE_PASSCODE = 1234;
 
