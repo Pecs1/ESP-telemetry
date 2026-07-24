@@ -5,8 +5,11 @@
 #include <WiFi.h>
 #include <WiFiType.h>
 
-void WifiManger::setupNormal() {
+void WifiManger::setupNormal(const char* ssid, const char* passwd) {
     WiFi.mode(WIFI_STA);
+    if (ssid != nullptr && passwd != nullptr) {
+        WiFi.begin(ssid, passwd);
+    }
 }
 
 void WifiManger::setupMaint(const char* ssid, const char* passwd) {
