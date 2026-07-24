@@ -24,14 +24,14 @@ class Log {
         if (DEBUG < minLevel) {
             return;
         }
-        printTagColor(blue, "DEBUG", component, message);
+        printTagColor(green, "DEBUG", component, message);
     }
 
     void info(std::string_view component, std::string_view message) {
         if (INFO < minLevel) {
             return;
         }
-        printTagColor(green, "INFO", component, message);
+        printTagColor(blue, "INFO", component, message);
     }
 
     void warn(std::string_view component, std::string_view message) {
@@ -45,14 +45,14 @@ class Log {
         if (ERR < minLevel) {
             return;
         }
-        printFullColor(red, "ERROR", component, message);
+        printFullColor(magenta, "ERROR", component, message);
     }
 
     void crit(std::string_view component, std::string_view message) {
         if (CRIT < minLevel) {
             return;
         }
-        printFullColor(magenta, "CRIT", component, message);
+        printFullColor(red, "CRIT", component, message);
     }
 
   private:
