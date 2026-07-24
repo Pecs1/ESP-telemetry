@@ -14,19 +14,26 @@
 // you must set this at the top
 #include <Arduino.h>
 
-// you must set this before including config.h
+// you must set this before including wifi.h
 // used to differentiate the boards when they are in AP mode
 // must (welp should) be unique
 #define BOARD_NAME "YourBoard"
 
-// you will find some basic configs here
-// also your secrets are imported within this header
+// your secrets + logger utility are imported within this header
 #include <config.h>
+
+// contains core things/utilities related stuff
+#include <core.h>
 
 // so far used only to setup wifi
 // either in STA or AP mode
 #include <wifi.h>
 
-void setup() {}
+void setup() {
+    // starts serial monitor
+    // it may display sometimes "broken/trailing" info log
+    // lazy to fix + it should be fine with the next log entry
+    core.setup();
+}
 
 void loop() {}
