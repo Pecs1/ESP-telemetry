@@ -9,7 +9,3 @@
 
 // import log utility
 #include "logs/logger.h"
-
-// for Preferences
-#define RW false // read-write
-#define RO true  // read-only
