@@ -21,21 +21,28 @@ Make sure you have **[pioarduino](https://github.com/pioarduino)** installed
 
 Used boards in `/boards` directory
 
+<div align="center">
+
 | Board | Microcontroller |
-| :--- | :--- |
+| :---: | :---: |
 | [`main`](./boards/main/main.cpp) | *to be added* |
 | [`temps`](./boards/temps/main.cpp) | **ESP32-WROOM-32U** |
 | [`gps`](./boards/gps/main.cpp) |  **ESP32-WROOM-32U** |
 | [`R-LoRa`](./boards/R-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
 | [`S-LoRa`](./boards/S-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
 
+</div>
 
 ### Sensors
 
+<div align="center">
+
 | Sensor | Function |
-| :--- | :--- |
+| :---: | :---: |
 | **DS18B20** | Temperature |
 | **SparkFun GPS NEO-M9N, U.FL (Qwiic)** | GPS |
+
+</div>
 
 ## Developing
 
@@ -51,4 +58,8 @@ Used boards in `/boards` directory
 
 ## License
 
+<div align="center">
+
 This project is licensed under the [MPL-2.0](https://github.com/Pecs1/ESP-telemetry/blob/main/LICENSE)
+
+</div>
