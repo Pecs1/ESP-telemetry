@@ -1,6 +1,10 @@
+<div align="center">
+
 # ESP-Telemetry
 
 Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-Website) for [Shell eco-marathon](https://www.shellecomarathon.com/) competition
+
+</div>
 
 > [!Important]
 > I'll be slowly migrating to pioarduino, so expect some breaking changes
