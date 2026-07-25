@@ -26,10 +26,8 @@
 #include <config.h>
 
 // contains core things/utilities related stuff
+// also contains persistant storage
 #include <core.h>
-
-// contains persistant storage related stuff
-#include <prefs.h>
 
 // so far used only to setup wifi
 // either in STA or AP mode
@@ -41,7 +39,7 @@ void setup() {
 
     // checks and create keys for later use
     // e.g. used to change modes after rebooting
-    prefs.check();
+    core.checkKeys();
 }
 
 void loop() {}
