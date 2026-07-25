@@ -7,12 +7,16 @@
 void CoreUtil::setup() {
     Serial.begin(SERIAL_BAUD);
     delay(200);
-    Serial.flush();
+
     // bit of a fix
-    Serial.println();
-    delay(300);
+    while (Serial.available() > 0) {
+        Serial.read();
+    }
+
+    Serial.println("\n\n");
     Serial.flush();
+    delay(100);
+
     logger.info("core", "board has started!");
 }
-
 CoreUtil core;

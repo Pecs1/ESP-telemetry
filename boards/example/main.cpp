@@ -37,8 +37,6 @@
 
 void setup() {
     // starts serial monitor
-    // it *MAY* display "broken/trailing" info log - just visual bug
-    // lazy to fix + it should be fine with the next log entry
     core.setup();
 
     // checks and create keys for later use
