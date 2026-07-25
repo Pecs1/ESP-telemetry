@@ -7,34 +7,46 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 
 ## Prerequisites
 
-### Make sure you have installed these external libraries:
+Make sure you have **[pioarduino](https://github.com/pioarduino)** installed
+
+### Dependencies
+
+> [!Note]
+> Dependencies are automatically managed by pioarduino via `platformio.ini`.
 
 - [**DallasTemperature**](https://github.com/milesburton/Arduino-Temperature-Control-Library)
 - [**OneWire**](https://github.com/PaulStoffregen/OneWire)
-- [**ESP32-OTA**](https://github.com/scottchiefbaker/ESP-WebOTA) (WebOTA)
 
-### Microcontrollers:
+### Microcontrollers
 
-Used boards in these directories
-- `main`:     not decided yet :/
-- `temps`:  **ESP32-WROOM-32U**
-- `GPS`:    **ESP32-WROOM-32U**
-- `R-LoRa`: **LilyGO TTGO LoRa32**
-- `S-LoRa`: **LilyGO TTGO LoRa32**
+Used boards in `/boards` directory
+
+| Board | Microcontroller |
+| :--- | :--- |
+| [`main`](./boards/main/main.cpp) | *to be added* |
+| [`temps`](./boards/temps/main.cpp) | **ESP32-WROOM-32U** |
+| [`gps`](./boards/gps/main.cpp) |  **ESP32-WROOM-32U** |
+| [`R-LoRa`](./boards/R-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
+| [`S-LoRa`](./boards/S-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
 
 
-### Sensors:
+### Sensors
 
-- **DS18B20** ➔ Temperature
-- **SparkFun GPS NEO-M9N, U.FL (Qwiic)** ➔ GPS
+| Sensor | Function |
+| :--- | :--- |
+| **DS18B20** | Temperature |
+| **SparkFun GPS NEO-M9N, U.FL (Qwiic)** | GPS |
 
 ## Developing
 
-TODO: add dev guide
+> [!Note]
+> The `example` board is regularly updated with new features and fixes.
 
-### Credits
+### Getting Started
 
-This project incorporates logic and inspiration from various open-source contributors and friends within the Shell Eco-marathon community.
+1. **Install pioarduino**
+2. **Explore the example project:** Open [/boards/example/main.cpp](./boards/example/main.cpp). 
+3. **Read the file header:** Please read the notice at the top of `main.cpp`. It's there for you!
 
 
 ## License
