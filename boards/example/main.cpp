@@ -5,6 +5,9 @@
  * - Now you can add your credentials/secrets.
  * - Set BOARD_NAME below to match your hardware setup.
  *
+ * - At the time of this writing, you can include my headers in any order,
+ * after defining the "BOARD_NME", if that will change some day, i will add warnings ^^
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -34,7 +37,7 @@
 
 void setup() {
     // starts serial monitor
-    // it may display sometimes "broken/trailing" info log
+    // it *MAY* display "broken/trailing" info log - just visual bug
     // lazy to fix + it should be fine with the next log entry
     core.setup();
 
