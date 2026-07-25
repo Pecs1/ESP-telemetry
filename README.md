@@ -21,7 +21,6 @@ Make sure you have **[pioarduino](https://github.com/pioarduino)** installed
 
 Used boards in `/boards` directory
 
-<div align="center">
 
 | Board | Microcontroller |
 | :---: | :---: |
@@ -31,18 +30,13 @@ Used boards in `/boards` directory
 | [`R-LoRa`](./boards/R-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
 | [`S-LoRa`](./boards/S-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
 
-</div>
 
 ### Sensors
-
-<div align="center">
 
 | Sensor | Function |
 | :---: | :---: |
 | **DS18B20** | Temperature |
 | **SparkFun GPS NEO-M9N, U.FL (Qwiic)** | GPS |
-
-</div>
 
 ## Developing
 
