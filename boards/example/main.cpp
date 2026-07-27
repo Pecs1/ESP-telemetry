@@ -33,6 +33,10 @@
 // either in STA or AP mode
 #include <wifi.h>
 
+// note you can rename "mode" to your liking
+// must be set after including core.h
+SystemMode mode;
+
 void setup() {
     // starts serial monitor
     core.setup();
@@ -40,6 +44,15 @@ void setup() {
     // checks and create keys for later use
     // e.g. used to change modes after rebooting
     core.checkKeys();
+
+    // MUST be called after checkKeys()
+    // can only be once in void setup()
+    // checks if "current mode" is the same as "next mode"
+    // sets the "next mode" value to "current mode" if different
+
+    // usage: if you have a switch in your code,
+    // you could run/load mode specific code
+    mode = core.readMode();
 }
 
 void loop() {}

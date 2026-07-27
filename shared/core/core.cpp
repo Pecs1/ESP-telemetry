@@ -32,6 +32,7 @@ void CoreUtil::checkKeys() {
 
     // check individual keys
     checkKeyUtil(currentModeKey, [&](const char* key) { nvs.putUChar(key, 0); });
+    checkKeyUtil(nextModeKey, [&](const char* key) { nvs.putUChar(key, 0); });
     // easily expandible ^^
 
     logger.debug("prefs", "closing persistant storage");
@@ -39,4 +40,25 @@ void CoreUtil::checkKeys() {
     logger.info("prefs", "done checking keys");
 }
 
+SystemMode CoreUtil::readMode() {
+    nvs.begin(nvsName, RW); // open RW
+    logger.debug("prefs", "checking modes");
+
+    uint8_t currentMode = nvs.getUChar(currentModeKey);
+    uint8_t nextMode    = nvs.getUChar(nextModeKey);
+
+    if (currentMode != nextMode) {
+        logger.info("core", "switching from \"%s\" to \"%s\" mode", stringify(currentMode),
+                    stringify(nextMode));
+        nvs.putUChar(currentModeKey, nextMode);
+
+        currentMode = nextMode;
+    }
+
+    logger.debug("prefs", "closing persistant storage");
+    nvs.end(); // close RW
+    logger.info("core", "successfuly checked & applied mode");
+
+    return static_cast<SystemMode>(currentMode);
+}
 CoreUtil core;
