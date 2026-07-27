@@ -21,12 +21,12 @@ class CoreUtil {
     template <typename Func>
     void checkKeyUtil(const char* key, Func&& arg) {
         if (nvs.isKey(key) == false) {
-            logger.warn("core - prefs", "\"%s\" key not found", key);
-            logger.debug("core - prefs", "creating \"%s\" key", key);
+            logger.warn("prefs", "\"%s\" key not found", key);
+            logger.debug("prefs", "creating \"%s\" key", key);
 
             arg(key);
 
-            logger.info("core - prefs", "\"%s\" key created", key);
+            logger.info("prefs", "\"%s\" key created", key);
         }
     }
 };
