@@ -1,7 +1,5 @@
 #include "./core.h"
 
-#include "../logs/logger.h"
-
 #include <HardwareSerial.h>
 
 void CoreUtil::setup() {
@@ -21,14 +19,13 @@ void CoreUtil::setup() {
 }
 
 void CoreUtil::checkKeys() {
-
     // note that logger isnt in the docs, logger is my custom util
     // docs/example:
     // https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/preferences.html
 
     logger.debug("prefs", "opening \"%s\" persistant storage", nvsName);
     nvs.begin(nvsName, RW); // open RW
-    logger.info("prefs", "checking keys");
+    logger.debug("prefs", "checking keys");
 
     // check individual keys
     checkKeyUtil(currentModeKey, [&](const char* key) { nvs.putUChar(key, 0); });
@@ -37,7 +34,7 @@ void CoreUtil::checkKeys() {
 
     logger.debug("prefs", "closing persistant storage");
     nvs.end(); // close RW
-    logger.info("prefs", "done checking keys");
+    logger.info("core", "successfuly checked keys");
 }
 
 SystemMode CoreUtil::readMode() {
@@ -61,4 +58,5 @@ SystemMode CoreUtil::readMode() {
 
     return static_cast<SystemMode>(currentMode);
 }
+
 CoreUtil core;

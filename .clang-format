@@ -21,3 +21,4 @@ SpacesInContainerLiterals: true
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortEnumsOnASingleLine: false
 BreakTemplateDeclarations: Yes
+KeepEmptyLinesAtTheStartOfBlocks: false
