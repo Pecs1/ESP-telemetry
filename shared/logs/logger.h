@@ -16,6 +16,7 @@ enum LogLevel : uint8_t {
 
 class Log {
   public:
+    // sets the minimum log severity level
     void setMinLevel(LogLevel level) {
         minLevel = level;
     }

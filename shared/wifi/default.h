@@ -13,8 +13,13 @@ inline const char* failsafeSSID = TEAM_NAME " - ERROR " BOARD_NAME;
 
 class WifiManger {
   public:
+    // sets wifi to WIFI_STA
     void setupNormal(const char* ssid = nullptr, const char* passwd = nullptr);
+    
+    // sets wifi to WIFI_AP
     void setupMaint(const char* ssid, const char* passwd = nullptr);
+    
+    // sets wifi to WIFI_AP_STA
     void setupFailsafe(const char* ssid, const char* passwd = nullptr);
 };
 extern WifiManger wifi;
