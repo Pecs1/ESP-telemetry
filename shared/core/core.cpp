@@ -59,4 +59,16 @@ SystemMode CoreUtil::readMode() {
     return static_cast<SystemMode>(currentMode);
 }
 
+void CoreUtil::setMode(SystemMode nextMode) {
+    nvs.begin(nvsName, RW); // open RW
+    uint8_t mode = static_cast<uint8_t>(nextMode);
+    logger.debug("prefs", "setting \"%s\" mode for next reboot", stringify(mode));
+
+    nvs.putUChar(nextModeKey, mode);
+
+    logger.debug("prefs", "closing persistant storage");
+    nvs.end();
+    logger.info("prefs", "mode set to \"%s\"", stringify(mode));
+}
+
 CoreUtil core;

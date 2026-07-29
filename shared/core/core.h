@@ -34,6 +34,11 @@ class CoreUtil {
     // should be used to run mode specific code
     SystemMode readMode();
 
+    // sets the mode used for the next reboot
+    //
+    // - should be used together with readMode()
+    void setMode(SystemMode nextMode);
+
   private:
     Preferences nvs;
 
