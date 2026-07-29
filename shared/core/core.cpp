@@ -50,11 +50,12 @@ SystemMode CoreUtil::readMode() {
         nvs.putUChar(currentModeKey, nextMode);
 
         currentMode = nextMode;
+        logger.debug("core", "successfuly applied mode");
     }
 
     logger.debug("prefs", "closing persistant storage");
     nvs.end(); // close RW
-    logger.info("core", "successfuly checked & applied mode");
+    logger.info("core", "successfuly checked mode");
 
     return static_cast<SystemMode>(currentMode);
 }
