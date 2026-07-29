@@ -6,7 +6,7 @@
  * - Set BOARD_NAME below to match your hardware setup.
  *
  * - At the time of this writing, you can include my headers in any order,
- * after defining the "BOARD_NME", if that will change some day, i will add warnings ^^
+ * after defining the "BOARD_NAME", if that will change some day, i will add warnings ^^
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this

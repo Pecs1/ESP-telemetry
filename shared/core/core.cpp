@@ -23,7 +23,7 @@ void CoreUtil::checkKeys() {
     // docs/example:
     // https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/preferences.html
 
-    logger.debug("prefs", "opening \"%s\" persistant storage", nvsName);
+    logger.debug("prefs", "opening \"%s\" persistent storage", nvsName);
     nvs.begin(nvsName, RW); // open RW
     logger.debug("prefs", "checking keys");
 
@@ -32,7 +32,7 @@ void CoreUtil::checkKeys() {
     checkKeyUtil(nextModeKey, [&](const char* key) { nvs.putUChar(key, 0); });
     // easily expandible ^^
 
-    logger.debug("prefs", "closing persistant storage");
+    logger.debug("prefs", "closing persistent storage");
     nvs.end(); // close RW
     logger.info("core", "successfuly checked keys");
 }
@@ -53,7 +53,7 @@ SystemMode CoreUtil::readMode() {
         logger.debug("core", "successfuly applied mode");
     }
 
-    logger.debug("prefs", "closing persistant storage");
+    logger.debug("prefs", "closing persistent storage");
     nvs.end(); // close RW
     logger.info("core", "successfuly checked mode");
 
@@ -67,7 +67,7 @@ void CoreUtil::setMode(SystemMode nextMode) {
 
     nvs.putUChar(nextModeKey, mode);
 
-    logger.debug("prefs", "closing persistant storage");
+    logger.debug("prefs", "closing persistent storage");
     nvs.end();
     logger.info("prefs", "mode set to \"%s\"", stringify(mode));
 }
