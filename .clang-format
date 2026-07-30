@@ -6,6 +6,7 @@ TabWidth: 4
 UseTab: Never
 ColumnLimit: 100
 
+NamespaceIndentation: All
 AccessModifierOffset: -2
 BreakBeforeBraces: Attach
 PointerAlignment: Left
