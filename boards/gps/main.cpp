@@ -1,140 +1,77 @@
 #include <Arduino.h>
 
-// for normal mode
-#include <esp_now.h>
-#include <WiFi.h>
+#define BOARD_NAME "GPS"
 
-// for maintenance mode
-#include <WiFiAP.h>
-#include <WebOTA.h>
-#include <ESPmDNS.h>
+#include <config.h>
+#include <core.h>
+#include <wifi.h>
 
-// for internal logic
-#include <Preferences.h>
-
-
-// esp_now.h
-esp_now_peer_info_t peerInfo;
-
-// preferences.h
-Preferences prefs;
-
+SystemMode mode;
 
 void setup() {
-  Serial.begin(115200);
+    core.setup();
 
-  // docs/example: https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/preferences.html
+    core.checkKeys();
 
-  prefs.begin("sys_state", RW);  // open in RW
+    mode = core.readMode();
 
-  // check if persistant storage has been created before
-  if (prefs.isKey("ready") == false) {
+    switch (mode) {
+        case SystemMode::DEBUG:
+            // setup same as in normal,
+            // just pass additional debug overhead
+            logger.setMinLevel(DEBUG);
 
-    // write to persistant storage
-    prefs.putBool("ready", true);
-    prefs.putUChar("current_mode", 0);
-  }
+            wifi.setupNormal();
 
-  prefs.end();  // close RW
+            espnow.init();
+            espnow.registerPeer(mainAddress);
+            break;
 
+        case SystemMode::NORMAL:
+            wifi.setupNormal();
 
-  prefs.begin("sys_state", RO); // open in RO
+            espnow.init();
+            espnow.registerPeer(mainAddress);
+            break;
 
-  // load the saved mode from persistant storage
-  uint8_t savedMode = prefs.getUChar("current_mode");
-  currentMode = (SystemMode)savedMode;
+        case SystemMode::MAINT:
+            wifi.setupMaint(maintSSID);
+            break;
 
-  prefs.end();  // close RO
+        case SystemMode::FAILSAFE:
+            wifi.setupFailsafe(failsafeSSID);
 
+            espnow.init();
+            espnow.registerPeer(mainAddress);
+            break;
 
-  switch (currentMode) {
-    case NORMAL:
-      initNormal();
-      break;
+        default:
+            logger.crit("core", "mode not found!");
+            logger.warn("core", "setting mode to failsafe!");
 
-    case MAINTENANCE:
-      initMaintenance();
-      break;
-
-    default:
-      initFailSafe();
-      break;
-  }
+            core.setMode(SystemMode::FAILSAFE);
+            ESP.restart();
+    }
 }
 
 void loop() {
-  switch (currentMode) {
-    case NORMAL:
+    switch (mode) {
+        case SystemMode::NORMAL:
+            // TODO: add normal
+            break;
 
-      return;
+        case SystemMode::DEBUG:
+            logger.debug("board", "new loop");
+            break;
 
-    case MAINTENANCE:
-      webota.handle();
-      return;
+        case SystemMode::MAINT:
+            // TODO: add maint
+            break;
 
-    default:
-
-      return;
-  }
-}
-
-void initNormal() {
-  // docs: https://docs.arduino.cc/tutorials/nano-esp32/esp-now/#code
-  // set as WiFi Station
-  WiFi.mode(WIFI_STA);
-
-  while (!WiFi.STA.started()) {
-    delay(100);
-  }
-
-  // Init ESP-NOW
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
-    return;
-  }
-  // get status of transmitted packet
-  esp_now_register_send_cb(OnDataSent);
-
-  // clear out data just in case
-  memset(&peerInfo, 0, sizeof(peerInfo));
-
-  // copy the peer address into peer structure
-  memcpy(peerInfo.peer_addr, mainAddress, 6);
-
-  peerInfo.channel = 0;
-  peerInfo.encrypt = false;
-
-  // Add peer
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Failed to add main board!");
-    ESP.restart();
-  }
-}
-
-void initMaintenance() {
-  // docs: https://docs.espressif.com/projects/arduino-esp32/en/latest/api/wifi.html#wi-fi-ap-example
-  // set to AP
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP(MAINT_SSID, SPECIAL_PASSWD);
-
-  if (!MDNS.begin(TEAM_NAME)) {
-    Serial.println("Error setting up MDNS responder!");
-    while (1) {
-      delay(1000);
+        default:
+            // TODO: add failsafe
+            // can move failsafe to default,
+            // since not having mode should be handled in setup
+            break;
     }
-  }
-  webota.init(80, "/update");  // start webota
-  MDNS.addService("http", "tcp", 80);
-}
-
-void initFailSafe() {
-}
-
-// callback when data is sent
-void OnDataSent(const wifi_tx_info_t *tx_info, esp_now_send_status_t status) {
-  if (status == ESP_NOW_SEND_SUCCESS) {
-    currentTxState = TX_SUCCESS;
-  } else {
-    currentTxState = TX_FAILED;
-  }
 }
