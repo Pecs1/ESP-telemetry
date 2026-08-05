@@ -1,7 +1,5 @@
 #include "./default.h"
 
-#include "../config.h"
-
 #include <WiFi.h>
 #include <WiFiType.h>
 
@@ -25,10 +23,6 @@ void WifiManger::setupMaint(const char* ssid, const char* passwd) {
     logger.debug("wifi", "setting to AP");
 
     WiFi.mode(WIFI_AP);
-
-    if (passwd == nullptr) {
-        passwd = apPasswd;
-    }
     WiFi.softAP(ssid, passwd);
 
     logger.info("wifi", "started AP");
@@ -38,10 +32,6 @@ void WifiManger::setupFailsafe(const char* ssid, const char* passwd) {
     logger.debug("wifi", "setting to AP+STA");
 
     WiFi.mode(WIFI_AP_STA);
-
-    if (passwd == nullptr) {
-        passwd = apPasswd;
-    }
     WiFi.softAP(ssid, passwd);
 
     logger.info("wifi", "started AP+STA");
