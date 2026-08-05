@@ -71,7 +71,7 @@ class Log {
   private:
     LogLevel minLevel = INFO;
 
-#define LOG_COLOR_ARGS                                                                             \
+#define LOG_COLOR_ARGS \
     const char *color, const char *level, const char *component, const char *fmt, Args &&... args
 
     template <typename... Args>

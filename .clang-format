@@ -14,6 +14,7 @@ IndentCaseLabels: true
 SortIncludes: true
 IncludeBlocks: Regroup
 
+AlignEscapedNewlines: Left
 AlignConsecutiveAssignments: Consecutive
 AlignConsecutiveDeclarations: None
 Cpp11BracedListStyle: false
