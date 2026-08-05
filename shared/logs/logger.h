@@ -20,52 +20,62 @@ class Log {
         minLevel = level;
     }
 
+// just be careful... macros arent being type checked
+#define LOG_INPUT_ARGS const char *component, const char *fmt, Args &&... args
+#define LOG_PAYLOAD_ARGS component, fmt, std::forward<Args>(args)...
+
     template <typename... Args>
-    void debug(const char* component, const char* fmt, Args&&... args) {
+    void debug(LOG_INPUT_ARGS) {
         if (DEBUG < minLevel) {
             return;
         }
-        printTagColor(green, "DEBUG", component, fmt, std::forward<Args>(args)...);
+        printTagColor(green, "DEBUG", LOG_PAYLOAD_ARGS);
     }
 
     template <typename... Args>
-    void info(const char* component, const char* fmt, Args&&... args) {
+    void info(LOG_INPUT_ARGS) {
         if (INFO < minLevel) {
             return;
         }
-        printTagColor(blue, "INFO", component, fmt, std::forward<Args>(args)...);
+        printTagColor(blue, "INFO", LOG_PAYLOAD_ARGS);
     }
 
     template <typename... Args>
-    void warn(const char* component, const char* fmt, Args&&... args) {
+    void warn(LOG_INPUT_ARGS) {
         if (WARN < minLevel) {
             return;
         }
-        printTagColor(yellow, "WARN", component, fmt, std::forward<Args>(args)...);
+        printTagColor(yellow, "WARN", LOG_PAYLOAD_ARGS);
     }
 
     template <typename... Args>
-    void err(const char* component, const char* fmt, Args&&... args) {
+    void err(LOG_INPUT_ARGS) {
         if (ERR < minLevel) {
             return;
         }
-        printFullColor(magenta, "ERROR", component, fmt, std::forward<Args>(args)...);
+        printFullColor(magenta, "ERROR", LOG_PAYLOAD_ARGS);
     }
 
     template <typename... Args>
-    void crit(const char* component, const char* fmt, Args&&... args) {
+    void crit(LOG_INPUT_ARGS) {
         if (CRIT < minLevel) {
             return;
         }
-        printFullColor(red, "CRIT", component, fmt, std::forward<Args>(args)...);
+        printFullColor(red, "CRIT", LOG_PAYLOAD_ARGS);
     }
+
+// can safely undefine, coz users dont need this
+#undef LOG_INPUT_ARGS
+#undef LOG_PAYLOAD_ARGS
 
   private:
     LogLevel minLevel = INFO;
 
+#define LOG_COLOR_ARGS                                                                             \
+    const char *color, const char *level, const char *component, const char *fmt, Args &&... args
+
     template <typename... Args>
-    void printTagColor(const char* color, const char* level, const char* component, const char* fmt,
-                       Args&&... args) {
+    void printTagColor(LOG_COLOR_ARGS) {
         Serial.printf("%s[%s] [%s]%s ", color, level, component, colorReset);
 
         argPrintf(fmt, std::forward<Args>(args)...);
@@ -74,12 +84,12 @@ class Log {
 
     // similar, but prints the whole message colored
     template <typename... Args>
-    void printFullColor(const char* color, const char* level, const char* component,
-                        const char* fmt, Args&&... args) {
+    void printFullColor(LOG_COLOR_ARGS) {
         Serial.printf("%s[%s] [%s] ", color, level, component);
         argPrintf(fmt, std::forward<Args>(args)...);
         Serial.printf("%s\n", colorReset);
     }
+#undef LOG_COLOR_ARGS
 
     // helpers
     template <typename... Args>
