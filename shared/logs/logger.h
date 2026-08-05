@@ -74,6 +74,8 @@ class Log {
 #define LOG_COLOR_ARGS \
     const char *color, const char *level, const char *component, const char *fmt, Args &&... args
 
+    // prints only the severity level + component colored
+    // colored just this for e.g. [DEBUG] [core]
     template <typename... Args>
     void printTagColor(LOG_COLOR_ARGS) {
         Serial.printf("%s[%s] [%s]%s ", color, level, component, colorReset);
