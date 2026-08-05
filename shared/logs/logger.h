@@ -4,7 +4,6 @@
 
 #include <HardwareSerial.h>
 #include <cstdint>
-#include <string_view>
 
 enum LogLevel : uint8_t {
     DEBUG,
@@ -22,7 +21,7 @@ class Log {
     }
 
     template <typename... Args>
-    void debug(std::string_view component, const char* fmt, Args&&... args) {
+    void debug(const char* component, const char* fmt, Args&&... args) {
         if (DEBUG < minLevel) {
             return;
         }
@@ -30,7 +29,7 @@ class Log {
     }
 
     template <typename... Args>
-    void info(std::string_view component, const char* fmt, Args&&... args) {
+    void info(const char* component, const char* fmt, Args&&... args) {
         if (INFO < minLevel) {
             return;
         }
@@ -38,7 +37,7 @@ class Log {
     }
 
     template <typename... Args>
-    void warn(std::string_view component, const char* fmt, Args&&... args) {
+    void warn(const char* component, const char* fmt, Args&&... args) {
         if (WARN < minLevel) {
             return;
         }
@@ -46,7 +45,7 @@ class Log {
     }
 
     template <typename... Args>
-    void err(std::string_view component, const char* fmt, Args&&... args) {
+    void err(const char* component, const char* fmt, Args&&... args) {
         if (ERR < minLevel) {
             return;
         }
@@ -54,7 +53,7 @@ class Log {
     }
 
     template <typename... Args>
-    void crit(std::string_view component, const char* fmt, Args&&... args) {
+    void crit(const char* component, const char* fmt, Args&&... args) {
         if (CRIT < minLevel) {
             return;
         }
@@ -65,10 +64,9 @@ class Log {
     LogLevel minLevel = INFO;
 
     template <typename... Args>
-    void printTagColor(const char* color, const char* level, std::string_view component,
-                       const char* fmt, Args&&... args) {
-        Serial.printf("%s[%-5s] [%.*s]%s ", color, level, svLen(component), svData(component),
-                      colorReset);
+    void printTagColor(const char* color, const char* level, const char* component, const char* fmt,
+                       Args&&... args) {
+        Serial.printf("%s[%-5s] [%s]%s ", color, level, component, colorReset);
 
         argPrintf(fmt, std::forward<Args>(args)...);
         Serial.printf("\n");
@@ -76,22 +74,14 @@ class Log {
 
     // similar, but prints the whole message colored
     template <typename... Args>
-    void printFullColor(const char* color, const char* level, std::string_view component,
+    void printFullColor(const char* color, const char* level, const char* component,
                         const char* fmt, Args&&... args) {
-        Serial.printf("%s[%-5s] [%.*s] ", color, level, svLen(component), svData(component));
+        Serial.printf("%s[%-5s] [%s] ", color, level, component);
         argPrintf(fmt, std::forward<Args>(args)...);
         Serial.printf("%s\n", colorReset);
     }
 
     // helpers
-    int svLen(std::string_view task) {
-        return static_cast<int>(task.length());
-    }
-
-    const char* svData(std::string_view task) {
-        return task.data();
-    }
-
     template <typename... Args>
     void argPrintf(const char* fmt, Args&&... args) {
         if constexpr (sizeof...(Args) == 0) {
