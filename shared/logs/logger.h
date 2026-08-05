@@ -66,7 +66,7 @@ class Log {
     template <typename... Args>
     void printTagColor(const char* color, const char* level, const char* component, const char* fmt,
                        Args&&... args) {
-        Serial.printf("%s[%-5s] [%s]%s ", color, level, component, colorReset);
+        Serial.printf("%s[%s] [%s]%s ", color, level, component, colorReset);
 
         argPrintf(fmt, std::forward<Args>(args)...);
         Serial.printf("\n");
@@ -76,7 +76,7 @@ class Log {
     template <typename... Args>
     void printFullColor(const char* color, const char* level, const char* component,
                         const char* fmt, Args&&... args) {
-        Serial.printf("%s[%-5s] [%s] ", color, level, component);
+        Serial.printf("%s[%s] [%s] ", color, level, component);
         argPrintf(fmt, std::forward<Args>(args)...);
         Serial.printf("%s\n", colorReset);
     }
