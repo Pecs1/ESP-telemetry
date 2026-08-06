@@ -7,4 +7,4 @@
 #include "./wifi/default.h"
 
 // esp_now
-#include "./wifi/espnow/core.h"
+#include "./espnow/core.h"

@@ -1,7 +1,7 @@
 #include "./core.h"
 
-#include "../../core/helpers.h"
-#include "../../logs/logger.h"
+#include "../core/helpers.h"
+#include "../logs/logger.h"
 
 #define RETRY_NAME "espnow"
 
