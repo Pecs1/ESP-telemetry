@@ -29,8 +29,7 @@
 // also contains persistant storage
 #include <core.h>
 
-// so far used only to setup wifi
-// either in STA or AP mode
+// includes wifi + espnow utility
 #include <wifi.h>
 
 // note you can rename "mode" to your liking
@@ -53,6 +52,12 @@ void setup() {
     // usage: if you have a switch in your code,
     // you could run/load mode specific code
     mode = core.readMode();
+
+    // check if esp_now was initiated successfully
+    espnow.init();
+
+    // register peer/peers & check if they were added successfully
+    espnow.registerPeer(mainAddress);
 }
 
 void loop() {}
