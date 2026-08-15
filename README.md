@@ -6,9 +6,6 @@ Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-W
 
 </div>
 
-> [!Important]
-> I'll be slowly migrating to pioarduino, so expect some breaking changes
-
 ## Prerequisites
 
 Make sure you have **[pioarduino](https://github.com/pioarduino)** installed
