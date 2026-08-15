@@ -3,7 +3,7 @@
 #include "../logs/logger.h"
 #include "./core.h"
 
-#define retry(maxRetries, delayMS, ...)                                                            \
+#define retry(maxRetries, delayMS, ...) \
     helper.retryHelper(RETRY_NAME, __FUNCTION__, maxRetries, delayMS, __VA_ARGS__)
 
 class HelperUtil {
