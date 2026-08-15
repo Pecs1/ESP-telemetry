@@ -1,4 +1,4 @@
-name: Lint & Platformio Check
+name: Lint check & Platformio build
 
 on:
   push:
