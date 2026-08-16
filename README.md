@@ -4,6 +4,8 @@
 
 Project to send telemetry data to a [ESP-Website](https://github.com/Pecs1/ESP-Website) for [Shell eco-marathon](https://www.shellecomarathon.com/) competition
 
+[![Lint check & Platformio build](https://github.com/Pecs1/ESP-telemetry/actions/workflows/ci.yaml/badge.svg)](https://github.com/Pecs1/ESP-telemetry/actions/workflows/ci.yaml)
+
 </div>
 
 ## Prerequisites
