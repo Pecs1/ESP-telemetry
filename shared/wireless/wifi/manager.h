@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../config.h"
+#include "secrets/secrets.h"
 
 #ifndef BOARD_NAME
 #define BOARD_NAME "NAMELESS!"

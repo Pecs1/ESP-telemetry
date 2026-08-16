@@ -1,12 +1,11 @@
 #include <Arduino.h>
 
-// global libs
+// my lib
+#include "core.h"
+#include "wireless.h"
+
 #include <DallasTemperature.h>
 #include <OneWire.h>
-
-// my lib
-#include <config.h>
-#include <core.h>
 
 #define ONE_WIRE_BUS 25
 

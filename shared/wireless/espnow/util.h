@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstdint>
-#include <esp_now.h>
 
 class EspNowUtil {
   public:

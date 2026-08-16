@@ -4,7 +4,7 @@
 // for cleaner include ^^
 
 // wifi
-#include "./wifi/default.h"
+#include "wireless/wifi/manager.h"
 
 // esp_now
-#include "./espnow/core.h"
+#include "wireless/espnow/util.h"
