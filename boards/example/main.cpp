@@ -17,20 +17,16 @@
 // you must set this at the top
 #include <Arduino.h>
 
-// you must set this before including wifi.h
+// you must set this before including wireless.h
 // used to differentiate the boards when they are in AP mode
 // must (welp should) be unique
 #define BOARD_NAME "YourBoard"
 
-// your secrets + logger utility are imported within this header
-#include <config.h>
-
-// contains core things/utilities related stuff
-// also contains persistant storage
-#include <core.h>
+// contains core things/utilities, persistant storage, logger...
+#include "core.h"
 
 // includes wifi + espnow utility
-#include <wifi.h>
+#include "wireless.h"
 
 // note you can rename "mode" to your liking
 // must be set after including core.h

@@ -2,9 +2,8 @@
 
 #define BOARD_NAME "GPS"
 
-#include <config.h>
-#include <core.h>
-#include <wifi.h>
+#include "core.h"
+#include "wireless.h"
 
 SystemMode mode;
 

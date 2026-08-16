@@ -5,3 +5,6 @@
 
 // include core utilities
 #include "core/core.h"
+
+// logger util
+#include "core/logs/logger.h"

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../logs/logger.h"
+#include "./logs/logger.h"
 
 #include <Preferences.h>
 #include <cstdint>

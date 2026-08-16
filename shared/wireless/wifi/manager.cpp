@@ -1,4 +1,6 @@
-#include "./default.h"
+#include "./manager.h"
+
+#include "core.h"
 
 #include <WiFi.h>
 #include <WiFiType.h>
