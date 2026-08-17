@@ -16,7 +16,7 @@ namespace {
     }
 } // namespace
 
-void EspNowUtil::init() {
+void EspNowUtil::protectedInit() {
     retry(3, 2000, [&]() {
         // check if esp_now was initiated successfully
         if (esp_now_init() != ESP_OK) {
@@ -30,7 +30,7 @@ void EspNowUtil::init() {
     esp_now_register_send_cb(esp_now_send_cb_t(onDataSent));
 }
 
-void EspNowUtil::registerPeer(const uint8_t* address, uint8_t channel, bool encrypt) {
+void EspNowUtil::protectedRegisterPeer(const uint8_t* address, uint8_t channel, bool encrypt) {
     peerInfo.channel = channel;
     peerInfo.encrypt = encrypt;
 
