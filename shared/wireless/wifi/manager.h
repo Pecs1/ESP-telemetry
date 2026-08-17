@@ -23,9 +23,9 @@ class WifiManger {
             protectedSetupNormal(ssid, passwd);
         } else {
             if (wifiInitdMaint) {
-                guardBlockMSG(MODULE_NAME, "setupNormal");
-            } else if (wifiInitdFail) {
                 guardBlockMSG(MODULE_NAME, "setupMaint");
+            } else if (wifiInitdFail) {
+                guardBlockMSG(MODULE_NAME, "setupFailSafe");
             } else {
                 guardMSG();
             }
