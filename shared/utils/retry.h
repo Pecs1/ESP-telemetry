@@ -4,6 +4,8 @@
 
 #include <Arduino.h>
 
+#define MODULE_NAME "retry"
+
 #define retry(maxRetries, delayMS, ...) \
     executeRetry(MODULE_NAME, __FUNCTION__, maxRetries, delayMS, __VA_ARGS__)
 
@@ -11,18 +13,19 @@ inline void executeRetry(const char* file, const char* function, int maxRetries,
                          const std::function<bool()>& action) {
     for (int i = 1; i <= maxRetries; i++) {
         if (action()) {
-            logger.debug("helper", "function \"%s.%s\" succeeded", file, function);
+            logger.debug(MODULE_NAME, "function \"%s.%s\" succeeded", file, function);
             return;
         }
-        logger.warn("helper", "function \"%s.%s\" failed %i/%i times", file, function, i,
+        logger.warn(MODULE_NAME, "function \"%s.%s\" failed %i/%i times", file, function, i,
                     maxRetries);
 
         if (i < maxRetries) {
             delay(delayMS);
         }
     }
-    logger.crit("helper", "function \"%s.%s\" failed %i times!", file, function, maxRetries);
+    logger.crit(MODULE_NAME, "function \"%s.%s\" failed %i times!", file, function, maxRetries);
     core.setMode(SystemMode::FAILSAFE);
     logger.warn("core", "Rebooting to FAILSAFE!");
     ESP.restart();
 }
+#undef MODULE_NAME

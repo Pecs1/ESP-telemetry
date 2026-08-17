@@ -5,8 +5,10 @@
 #include <WiFi.h>
 #include <WiFiType.h>
 
+#define MODULE_NAME "wifi"
+
 void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
-    logger.debug("wifi", "setting to STA");
+    logger.debug(MODULE_NAME, "setting to STA");
 
     WiFi.mode(WIFI_STA);
 
@@ -15,28 +17,29 @@ void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
 
         while (WiFi.status() != WL_CONNECTED) {
             delay(200);
-            logger.info("wifi", "connecting...");
+            logger.info(MODULE_NAME, "connecting...");
         }
-        logger.info("wifi", "connected to %s", ssid);
+        logger.info(MODULE_NAME, "connected to %s", ssid);
     }
 }
 
 void WifiManger::protectedSetupMaint(const char* ssid, const char* passwd) {
-    logger.debug("wifi", "setting to AP");
+    logger.debug(MODULE_NAME, "setting to AP");
 
     WiFi.mode(WIFI_AP);
     WiFi.softAP(ssid, passwd);
 
-    logger.info("wifi", "started AP");
+    logger.info(MODULE_NAME, "started AP");
 }
 
 void WifiManger::protectedSetupFail(const char* ssid, const char* passwd) {
-    logger.debug("wifi", "setting to AP+STA");
+    logger.debug(MODULE_NAME, "setting to AP+STA");
 
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP(ssid, passwd);
 
-    logger.info("wifi", "started AP+STA");
+    logger.info(MODULE_NAME, "started AP+STA");
 }
+#undef MODULE_NAME
 
 WifiManger wifi;

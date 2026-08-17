@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #define MODULE_NAME "core"
+#define SUBMODULE_NAME "prefs"
 
 // prefs
 #define RW false // read-write
@@ -106,12 +107,12 @@ class CoreUtil {
     template <typename Func>
     void checkKeyUtil(const char* key, Func&& arg) {
         if (nvs.isKey(key) == false) {
-            logger.warn("prefs", "\"%s\" key not found", key);
-            logger.debug("prefs", "creating \"%s\" key", key);
+            logger.warn(SUBMODULE_NAME, "\"%s\" key not found", key);
+            logger.debug(SUBMODULE_NAME, "creating \"%s\" key", key);
 
             arg(key);
 
-            logger.info("prefs", "\"%s\" key created", key);
+            logger.info(SUBMODULE_NAME, "\"%s\" key created", key);
         }
     }
 
@@ -132,6 +133,7 @@ class CoreUtil {
         }
     }
 };
+#undef SUBMODULE_NAME
 #undef MODULE_NAME
 
 extern CoreUtil core;
