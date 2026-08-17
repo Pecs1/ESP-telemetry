@@ -24,13 +24,29 @@ class CoreUtil {
     // starts up Serial
     //
     // - used to restrict some functions to setup only
-    void setup();
+    void setup() {
+        if (!initSetup) {
+            initSetup = true;
+            protectedSetup();
+        } else {
+            logger.warn("core", "you can only use \"%s\" once", __FUNCTION__);
+            logger.info("core", "skipping \"%s\"...", __FUNCTION__);
+        }
+    }
 
     // checks individual keys for persistent storage if they exists
     //
     // - if a key doesnt exist, then it creates that key
     // - if a key does exist, then it does nothing
-    void checkKeys();
+    void checkKeys() {
+        if (initSetup && !checkedKeys) {
+            checkedKeys = true;
+            protectedCheckKeys();
+        } else {
+            logger.warn("core", "you can only use \"%s\" once", __FUNCTION__);
+            logger.info("core", "skipping \"%s\"...", __FUNCTION__);
+        }
+    }
 
     // reads mode from persistent storage
     //
@@ -45,6 +61,14 @@ class CoreUtil {
 
   private:
     Preferences nvs;
+
+    // protection logic
+    bool initSetup   = false;
+    bool checkedKeys = false;
+
+    // allow to run these function in code just once
+    void protectedSetup();
+    void protectedCheckKeys();
 
     // helper to reduce code duplication
     template <typename Func>

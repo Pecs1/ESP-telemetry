@@ -2,7 +2,7 @@
 
 #include <HardwareSerial.h>
 
-void CoreUtil::setup() {
+void CoreUtil::protectedSetup() {
     Serial.begin(SERIAL_BAUD);
     delay(200);
 
@@ -18,7 +18,7 @@ void CoreUtil::setup() {
     logger.info("core", "board has started!");
 }
 
-void CoreUtil::checkKeys() {
+void CoreUtil::protectedCheckKeys() {
     // note that logger isnt in the docs, logger is my custom util
     // docs/example:
     // https://docs.espressif.com/projects/arduino-esp32/en/latest/tutorials/preferences.html
