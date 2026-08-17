@@ -1,10 +1,14 @@
 #pragma once
 
 #include "./logs/logger.h"
+#include "utils/guard.h"
 
 #include <Preferences.h>
 #include <cstdint>
 
+#define MODULE_NAME "core"
+
+// prefs
 #define RW false // read-write
 #define RO true  // read-only
 
@@ -16,7 +20,8 @@ enum class SystemMode : uint8_t {
     NORMAL   = 0,
     DEBUG    = 1,
     MAINT    = 2,
-    FAILSAFE = 3
+    FAILSAFE = 3,
+    UNKNOWN  = 4
 };
 
 class CoreUtil {
@@ -29,8 +34,7 @@ class CoreUtil {
             initSetup = true;
             protectedSetup();
         } else {
-            logger.warn("core", "you can only use \"%s\" once", __FUNCTION__);
-            logger.info("core", "skipping \"%s\"...", __FUNCTION__);
+            guardMSG();
         }
     }
 
@@ -43,8 +47,7 @@ class CoreUtil {
             checkedKeys = true;
             protectedCheckKeys();
         } else {
-            logger.warn("core", "you can only use \"%s\" once", __FUNCTION__);
-            logger.info("core", "skipping \"%s\"...", __FUNCTION__);
+            guardMSG();
         }
     }
 
@@ -52,7 +55,14 @@ class CoreUtil {
     //
     // - should be used together with setMode()
     // - should be used to run mode specific code
-    SystemMode readMode();
+    SystemMode readMode() {
+        if (checkedKeys) {
+            return protectedReadMode();
+        } else {
+            guardDepsMSG("core", "checkKeys");
+            return SystemMode::UNKNOWN;
+        }
+    }
 
     // sets the mode used for the next reboot
     //
@@ -69,6 +79,9 @@ class CoreUtil {
     // allow to run these function in code just once
     void protectedSetup();
     void protectedCheckKeys();
+
+    // allow to run after checking keys
+    SystemMode protectedReadMode();
 
     // helper to reduce code duplication
     template <typename Func>

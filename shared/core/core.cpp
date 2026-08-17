@@ -37,7 +37,7 @@ void CoreUtil::protectedCheckKeys() {
     logger.info("core", "successfuly checked keys");
 }
 
-SystemMode CoreUtil::readMode() {
+SystemMode CoreUtil::protectedReadMode() {
     nvs.begin(nvsName, RW); // open RW
     logger.debug("prefs", "checking modes");
 
