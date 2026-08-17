@@ -113,4 +113,6 @@ class CoreUtil {
         }
     }
 };
+#undef MODULE_NAME
+
 extern CoreUtil core;

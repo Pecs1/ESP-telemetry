@@ -5,7 +5,7 @@
 #include <Arduino.h>
 
 #define retry(maxRetries, delayMS, ...) \
-    executeRetry(RETRY_NAME, __FUNCTION__, maxRetries, delayMS, __VA_ARGS__)
+    executeRetry(MODULE_NAME, __FUNCTION__, maxRetries, delayMS, __VA_ARGS__)
 
 inline void executeRetry(const char* file, const char* function, int maxRetries, int delayMS,
                          const std::function<bool()>& action) {

@@ -5,7 +5,7 @@
 
 #include <esp_now.h>
 
-#define RETRY_NAME "espnow"
+#define MODULE_NAME "espnow"
 
 esp_now_peer_info_t peerInfo;
 
@@ -46,5 +46,6 @@ void EspNowUtil::registerPeer(const uint8_t* address, uint8_t channel, bool encr
     });
     logger.info("espnow", "Successfuly registered/added peer");
 }
+#undef MODULE_NAME
 
 EspNowUtil espnow;
