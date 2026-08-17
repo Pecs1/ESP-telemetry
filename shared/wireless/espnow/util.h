@@ -23,7 +23,7 @@ class EspNowUtil {
         if (espnowInitd) {
             protectedRegisterPeer(address, channel, encrypt);
         } else {
-            guardDepsMSG("espnow", "init");
+            guardDepsMSG(MODULE_NAME, "init");
         }
     }
 

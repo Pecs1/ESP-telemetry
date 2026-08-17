@@ -23,9 +23,9 @@ class WifiManger {
             protectedSetupNormal(ssid, passwd);
         } else {
             if (wifiInitdMaint) {
-                guardBlockMSG("wifi", "setupNormal");
+                guardBlockMSG(MODULE_NAME, "setupNormal");
             } else if (wifiInitdFail) {
-                guardBlockMSG("wifi", "setupMaint");
+                guardBlockMSG(MODULE_NAME, "setupMaint");
             } else {
                 guardMSG();
             }
@@ -39,9 +39,9 @@ class WifiManger {
             protectedSetupMaint(ssid, passwd);
         } else {
             if (wifiInitdNormal) {
-                guardBlockMSG("wifi", "setupNormal");
+                guardBlockMSG(MODULE_NAME, "setupNormal");
             } else if (wifiInitdFail) {
-                guardBlockMSG("wifi", "setupFailSafe");
+                guardBlockMSG(MODULE_NAME, "setupFailSafe");
             } else {
                 guardMSG();
             }
@@ -56,9 +56,9 @@ class WifiManger {
             protectedSetupFail(ssid, passwd);
         } else {
             if (wifiInitdNormal) {
-                guardBlockMSG("wifi", "setupNormal");
+                guardBlockMSG(MODULE_NAME, "setupNormal");
             } else if (wifiInitdMaint) {
-                guardBlockMSG("wifi", "setupMaint");
+                guardBlockMSG(MODULE_NAME, "setupMaint");
             } else {
                 guardMSG();
             }
