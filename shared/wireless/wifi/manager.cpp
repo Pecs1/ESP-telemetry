@@ -5,7 +5,7 @@
 #include <WiFi.h>
 #include <WiFiType.h>
 
-void WifiManger::setupNormal(const char* ssid, const char* passwd) {
+void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
     logger.debug("wifi", "setting to STA");
 
     WiFi.mode(WIFI_STA);
@@ -21,7 +21,7 @@ void WifiManger::setupNormal(const char* ssid, const char* passwd) {
     }
 }
 
-void WifiManger::setupMaint(const char* ssid, const char* passwd) {
+void WifiManger::protectedSetupMaint(const char* ssid, const char* passwd) {
     logger.debug("wifi", "setting to AP");
 
     WiFi.mode(WIFI_AP);
@@ -30,7 +30,7 @@ void WifiManger::setupMaint(const char* ssid, const char* passwd) {
     logger.info("wifi", "started AP");
 }
 
-void WifiManger::setupFailsafe(const char* ssid, const char* passwd) {
+void WifiManger::protectedSetupFail(const char* ssid, const char* passwd) {
     logger.debug("wifi", "setting to AP+STA");
 
     WiFi.mode(WIFI_AP_STA);
