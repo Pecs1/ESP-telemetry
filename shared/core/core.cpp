@@ -60,7 +60,7 @@ SystemMode CoreUtil::protectedReadMode() {
     return static_cast<SystemMode>(currentMode);
 }
 
-void CoreUtil::setMode(SystemMode nextMode) {
+void CoreUtil::protectedSetMode(SystemMode nextMode) {
     nvs.begin(nvsName, RW); // open RW
     uint8_t mode = static_cast<uint8_t>(nextMode);
     logger.debug("prefs", "setting \"%s\" mode for next reboot", stringify(mode));

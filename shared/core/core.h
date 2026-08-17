@@ -46,6 +46,8 @@ class CoreUtil {
         if (initSetup && !checkedKeys) {
             checkedKeys = true;
             protectedCheckKeys();
+        } else if (!initSetup) {
+            guardBlockMSG(MODULE_NAME, "setup");
         } else {
             guardMSG();
         }
@@ -56,18 +58,34 @@ class CoreUtil {
     // - should be used together with setMode()
     // - should be used to run mode specific code
     SystemMode readMode() {
-        if (checkedKeys) {
+        if (initSetup && checkedKeys) {
             return protectedReadMode();
-        } else {
-            guardDepsMSG("core", "checkKeys");
-            return SystemMode::UNKNOWN;
         }
+
+        if (!checkedKeys) {
+            guardDepsMSG(MODULE_NAME, "checkKeys");
+        }
+        if (!initSetup) {
+            guardDepsMSG(MODULE_NAME, "setup");
+        }
+        return SystemMode::UNKNOWN;
     }
 
     // sets the mode used for the next reboot
     //
     // - should be used together with readMode()
-    void setMode(SystemMode nextMode);
+    void setMode(SystemMode nextMode) {
+        if (initSetup && checkedKeys) {
+            protectedSetMode(nextMode);
+        }
+
+        if (!checkedKeys) {
+            guardDepsMSG(MODULE_NAME, "checkKeys");
+        }
+        if (!initSetup) {
+            guardDepsMSG(MODULE_NAME, "setup");
+        }
+    }
 
   private:
     Preferences nvs;
@@ -82,6 +100,7 @@ class CoreUtil {
 
     // allow to run after checking keys
     SystemMode protectedReadMode();
+    void protectedSetMode(SystemMode nextMode);
 
     // helper to reduce code duplication
     template <typename Func>
