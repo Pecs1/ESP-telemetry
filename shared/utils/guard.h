@@ -22,7 +22,7 @@ inline void executeMSG(const char* file, const char* function) {
 inline void executeDepsMSG(const char* calledFile, const char* calledFunction,
                            const char* blockedByFile, const char* blockedByFunction) {
     logger.err(MODULE_NAME, "you can use \"%s.%s\" after calling \"%s.%s\"", calledFile,
-                calledFunction, blockedByFile, blockedByFunction);
+               calledFunction, blockedByFile, blockedByFunction);
     logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledFile, calledFunction);
 }
 
@@ -30,7 +30,7 @@ inline void executeDepsMSG(const char* calledFile, const char* calledFunction,
 inline void executeBlockMSG(const char* calledFile, const char* calledFunction,
                             const char* blockedByFile, const char* blockedByFunction) {
     logger.err(MODULE_NAME, "function \"%s.%s\" is blocked by \"%s.%s\"", calledFile,
-                calledFunction, blockedByFile, blockedByFunction);
+               calledFunction, blockedByFile, blockedByFunction);
     logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledFile, calledFunction);
 }
 #undef MODULE_NAME
