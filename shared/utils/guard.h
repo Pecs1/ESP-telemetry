@@ -14,23 +14,23 @@
     executeBlockMSG(MODULE_NAME, __FUNCTION__, blockedByModule, blockedByFunction)
 
 // stuff behind the scenes
-inline void executeMSG(const char* file, const char* function) {
-    logger.err(MODULE_NAME, "you can only use \"%s.%s\" once", file, function);
-    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", file, function);
+inline void executeMSG(const char* module, const char* function) {
+    logger.err(MODULE_NAME, "you can only use \"%s.%s\" once", module, function);
+    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", module, function);
 }
 
-inline void executeDepsMSG(const char* calledFile, const char* calledFunction,
+inline void executeDepsMSG(const char* calledModule, const char* calledFunction,
                            const char* blockedByFile, const char* blockedByFunction) {
-    logger.err(MODULE_NAME, "you can use \"%s.%s\" after calling \"%s.%s\"", calledFile,
+    logger.err(MODULE_NAME, "you can use \"%s.%s\" after calling \"%s.%s\"", calledModule,
                calledFunction, blockedByFile, blockedByFunction);
-    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledFile, calledFunction);
+    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledModule, calledFunction);
 }
 
 // similar to "executeDepsMSG", but diff message
-inline void executeBlockMSG(const char* calledFile, const char* calledFunction,
+inline void executeBlockMSG(const char* calledModule, const char* calledFunction,
                             const char* blockedByFile, const char* blockedByFunction) {
-    logger.err(MODULE_NAME, "function \"%s.%s\" is blocked by \"%s.%s\"", calledFile,
+    logger.err(MODULE_NAME, "function \"%s.%s\" is blocked by \"%s.%s\"", calledModule,
                calledFunction, blockedByFile, blockedByFunction);
-    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledFile, calledFunction);
+    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledModule, calledFunction);
 }
 #undef MODULE_NAME
