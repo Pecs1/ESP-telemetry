@@ -16,9 +16,10 @@ inline void executeRetry(const char* file, const char* function, int maxRetries,
             logger.debug(MODULE_NAME, "function \"%s.%s\" succeeded", file, function);
             return;
         }
-        logger.warn(MODULE_NAME, "function \"%s.%s\" failed %i/%i times", file, function, i,
-                    maxRetries);
+        logger.err(MODULE_NAME, "function \"%s.%s\" failed %i/%i times", file, function, i,
+                   maxRetries);
 
+        // dont apply the delay on the last failed attempt
         if (i < maxRetries) {
             delay(delayMS);
         }
