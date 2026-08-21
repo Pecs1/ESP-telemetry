@@ -19,7 +19,7 @@
 
 // you must set this before including wireless.h
 // used to differentiate the boards when they are in AP mode
-// must (welp should) be unique
+// should be unique if you plan to use more boards...
 #define BOARD_NAME "YourBoard"
 
 // contains core things/utilities, persistant storage, logger...
@@ -28,7 +28,7 @@
 // includes wifi + espnow utility
 #include "wireless.h"
 
-// note you can rename "mode" to your liking
+// note: you can rename "mode" to your liking
 // must be set after including core.h
 SystemMode mode;
 
@@ -36,20 +36,16 @@ void setup() {
     // starts serial monitor
     core.setup();
 
-    // checks and create keys for later use
+    // checks and create missing keys for later use
     // e.g. used to change modes after rebooting
     core.checkKeys();
 
-    // MUST be called after checkKeys()
-    // can only be once in void setup()
-    // checks if "current mode" is the same as "next mode"
-    // sets the "next mode" value to "current mode" if different
-
-    // usage: if you have a switch in your code,
-    // you could run/load mode specific code
+    // reads the mode, that was set with "core.setMode()"
+    //
+    // usage: you could run/load mode specific code
     mode = core.readMode();
 
-    // check if esp_now was initiated successfully
+    // init esp_now & check if it was initiated successfully
     espnow.init();
 
     // register peer/peers & check if they were added successfully
