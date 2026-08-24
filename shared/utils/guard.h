@@ -1,6 +1,6 @@
 #pragma once
 
-#include "core/logs/logger.h"
+#include "utils/logger.h"
 
 #define MODULE_NAME "guard"
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "./colors.h"
+#include "utils/colors.h"
 
 #include <HardwareSerial.h>
 #include <cstdint>
