@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./logs/logger.h"
 #include "utils/guard.h"
+#include "utils/logger.h"
 
 #include <Preferences.h>
 #include <cstdint>
