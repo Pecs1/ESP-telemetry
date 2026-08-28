@@ -5,7 +5,7 @@
 #include <HardwareSerial.h>
 #include <cstdint>
 
-enum LogLevel : uint8_t {
+enum class LogLevel : uint8_t {
     DEBUG,
     INFO,
     WARN,
@@ -26,7 +26,7 @@ class Log {
 
     template <typename... Args>
     void debug(LOG_INPUT_ARGS) {
-        if (DEBUG < minLevel) {
+        if (LogLevel::DEBUG < minLevel) {
             return;
         }
         printTagColor(green, "DEBUG", LOG_PAYLOAD_ARGS);
@@ -34,7 +34,7 @@ class Log {
 
     template <typename... Args>
     void info(LOG_INPUT_ARGS) {
-        if (INFO < minLevel) {
+        if (LogLevel::INFO < minLevel) {
             return;
         }
         printTagColor(blue, "INFO", LOG_PAYLOAD_ARGS);
@@ -42,7 +42,7 @@ class Log {
 
     template <typename... Args>
     void warn(LOG_INPUT_ARGS) {
-        if (WARN < minLevel) {
+        if (LogLevel::WARN < minLevel) {
             return;
         }
         printTagColor(yellow, "WARN", LOG_PAYLOAD_ARGS);
@@ -50,7 +50,7 @@ class Log {
 
     template <typename... Args>
     void err(LOG_INPUT_ARGS) {
-        if (ERR < minLevel) {
+        if (LogLevel::ERR < minLevel) {
             return;
         }
         printFullColor(magenta, "ERROR", LOG_PAYLOAD_ARGS);
@@ -58,7 +58,7 @@ class Log {
 
     template <typename... Args>
     void crit(LOG_INPUT_ARGS) {
-        if (CRIT < minLevel) {
+        if (LogLevel::CRIT < minLevel) {
             return;
         }
         printFullColor(red, "CRIT", LOG_PAYLOAD_ARGS);
@@ -69,7 +69,7 @@ class Log {
 #undef LOG_PAYLOAD_ARGS
 
   private:
-    LogLevel minLevel = INFO;
+    LogLevel minLevel = LogLevel::INFO;
 
 #define LOG_COLOR_ARGS \
     const char *color, const char *level, const char *component, const char *fmt, Args &&... args

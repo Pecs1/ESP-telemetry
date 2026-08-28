@@ -18,7 +18,7 @@ void setup() {
         case SystemMode::DEBUG:
             // setup same as in normal,
             // just pass additional debug overhead
-            logger.setMinLevel(DEBUG);
+            logger.setMinLevel(LogLevel::DEBUG);
 
             wifi.setupNormal();
 
