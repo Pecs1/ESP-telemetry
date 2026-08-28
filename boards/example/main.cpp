@@ -6,8 +6,9 @@
  * - Set BOARD_NAME below to match your hardware setup.
  * - Set correct flag for wireless to your use case
  *
- * - At the time of this writing, you can include my headers in any order,
- * after defining the "BOARD_NAME", if that will change some day, i will add warnings ^^
+ * - After you build and monitor, you may see messages such as: "no core dump partition found!"
+ *   you can safely ignore them
+ *
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
