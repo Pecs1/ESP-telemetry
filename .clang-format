@@ -12,6 +12,7 @@ BreakBeforeBraces: Attach
 PointerAlignment: Left
 IndentCaseLabels: true
 
+IndentPPDirectives: BeforeHash
 SortIncludes: true
 IncludeBlocks: Regroup
 

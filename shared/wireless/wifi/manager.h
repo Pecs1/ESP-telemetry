@@ -4,7 +4,7 @@
 #include "utils/guard.h"
 
 #ifndef BOARD_NAME
-#define BOARD_NAME "NAMELESS!"
+    #define BOARD_NAME "NAMELESS!"
 #endif
 
 #define MODULE_NAME "wifi"
