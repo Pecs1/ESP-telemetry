@@ -2,7 +2,7 @@
 
 // my lib
 #include "core.h"
-#include "wireless.h"
+// #include "wireless.h"
 
 #include <DallasTemperature.h>
 #include <OneWire.h>
