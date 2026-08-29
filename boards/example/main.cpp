@@ -4,6 +4,7 @@
  * - Rename `secrets.example.h` to `secrets.h` in `/shared/secrets`.
  * - Now you can add your credentials/secrets.
  * - Set BOARD_NAME below to match your hardware setup.
+ * - Set correct flag for wireless to your use case
  *
  * - At the time of this writing, you can include my headers in any order,
  * after defining the "BOARD_NAME", if that will change some day, i will add warnings ^^
@@ -17,10 +18,18 @@
 // you must set this at the top
 #include <Arduino.h>
 
-// you must set this before including wireless.h
-// used to differentiate the boards when they are in AP mode
-// should be unique if you plan to use more boards...
+// NOTICE:
+// you must set these macros before including wireless.h
+// - used to differentiate the boards when they are in AP mode
+//   should be unique if you plan to use more boards...
 #define BOARD_NAME "YourBoard"
+
+// - used to only include only the protocols you will need
+//   options:
+//     - WIRELESS_USE_WIFI   - includes only wifi
+//     - WIRELESS_USE_ESPNOW - includes wifi and espnow
+//     - WIRELESS_USE_ALL    - includes all protocols
+#define WIRELESS_USE_ESPNOW
 
 // contains core things/utilities, persistant storage, logger...
 #include "core.h"
