@@ -6,10 +6,6 @@
  * - Set BOARD_NAME below to match your hardware setup.
  * - Set correct flag for wireless to your use case
  *
- * - After you build and monitor, you may see messages such as: "no core dump partition found!"
- *   you can safely ignore them
- *
- *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -37,6 +33,9 @@
 
 // includes wifi + espnow utility
 #include "wireless.h"
+
+// contains OTA
+#include "aethr.h"
 
 // note: you can rename "mode" to your liking
 // must be set after including core.h
