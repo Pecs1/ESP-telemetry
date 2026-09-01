@@ -10,7 +10,7 @@
 void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
     logger.debug(MODULE_NAME, "setting to STA");
 
-    WiFi.mode(WIFI_STA);
+    WiFi.mode(WIFI_MODE_STA);
 
     if (ssid != nullptr && passwd != nullptr) {
         WiFi.begin(ssid, passwd);
