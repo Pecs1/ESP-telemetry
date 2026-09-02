@@ -10,7 +10,7 @@
 void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
     logger.debug(MODULE_NAME, "setting to STA");
 
-    WiFi.mode(WIFI_STA);
+    WiFi.mode(WIFI_MODE_STA);
 
     if (ssid != nullptr && passwd != nullptr) {
         WiFi.begin(ssid, passwd);
@@ -26,7 +26,7 @@ void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
 void WifiManger::protectedSetupMaint(const char* ssid, const char* passwd) {
     logger.debug(MODULE_NAME, "setting to AP");
 
-    WiFi.mode(WIFI_AP);
+    WiFi.mode(WIFI_MODE_AP);
     WiFi.softAP(ssid, passwd);
 
     logger.info(MODULE_NAME, "started AP");
@@ -35,7 +35,7 @@ void WifiManger::protectedSetupMaint(const char* ssid, const char* passwd) {
 void WifiManger::protectedSetupFail(const char* ssid, const char* passwd) {
     logger.debug(MODULE_NAME, "setting to AP+STA");
 
-    WiFi.mode(WIFI_AP_STA);
+    WiFi.mode(WIFI_MODE_APSTA);
     WiFi.softAP(ssid, passwd);
 
     logger.info(MODULE_NAME, "started AP+STA");

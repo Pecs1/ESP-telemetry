@@ -10,7 +10,7 @@
 esp_now_peer_info_t peerInfo;
 
 namespace {
-    void onDataSent(const uint8_t* mac_addr, esp_now_send_status_t status) {
+    void onDataSent(const esp_now_send_info_t* info, esp_now_send_status_t status) {
         logger.info(MODULE_NAME, "Packet has %s",
                     status == ESP_NOW_SEND_SUCCESS ? "succeeded" : "failed");
     }
