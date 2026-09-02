@@ -36,8 +36,8 @@ jobs:
         with:
           path: |
             ~/.cache/pip
-            ~/.platformio/.cache
-            .pio
+            ~/.platformio/packages
+            ~/.platformio/platforms
           key: ${{ runner.os }}-pio-${{ matrix.env }}-${{ hashFiles('**/platformio.ini') }}
           restore-keys: |
             ${{ runner.os }}-pio-${{ matrix.env }}-
