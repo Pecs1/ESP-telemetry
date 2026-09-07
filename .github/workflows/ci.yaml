@@ -49,8 +49,9 @@ jobs:
         with:
           esp_idf_version: v5.5.5
           target: ${{ matrix.target }}
-          path: 'system/bootloader'
           command: |
+            cd system/bootloader
+
             KEY_PATH=$(mktemp /tmp/key.XXXXXX.pem)
             trap 'shred -u "$KEY_PATH" 2>/dev/null || rm -f "$KEY_PATH"' EXIT
             echo "$SIGNING_KEY_BASE64" | base64 -d > "$KEY_PATH"
