@@ -57,11 +57,8 @@ jobs:
 
             idf.py -DCONFIG_SECURE_BOOT_SIGNING_KEY="$KEY_PATH" bootloader
 
-      - name: Stage Output
-        if: steps.cache-bootloader.outputs.cache-hit != 'true'
-        run: |
-            mkdir -p '../../bootloader_out'
-            cp 'build/bootloader/bootloader.bin' "../../bootloader_out/${{ matrix.target }}-bootloader.bin"
+            mkdir -p "../../bootloader_out"
+            cp build/bootloader/bootloader.bin "../../bootloader_out/${{ matrix.target }}-bootloader.bin"
 
       - name: Upload Bootloader Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
