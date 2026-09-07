@@ -41,27 +41,25 @@ jobs:
           path: bootloader_out/
           key: bootloader-${{ matrix.target }}-${{ hashFiles('bootloader_src/**') }}
 
-      - name: Setup ESP-IDF
+      - name: Build Target Bootloader
         if: steps.cache-bootloader.outputs.cache-hit != 'true'
         uses: espressif/esp-idf-ci-action@e6f5c74232b1ccd4c97ed641f1e48553853f1fd5 # v1.2.0
+        env:
+          SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
         with:
           esp_idf_version: v5.5.5
           target: ${{ matrix.target }}
+          path: 'system/bootloader'
+          command: |
+            KEY_PATH=$(mktemp /tmp/key.XXXXXX.pem)
+            trap 'shred -u "$KEY_PATH" 2>/dev/null || rm -f "$KEY_PATH"' EXIT
+            echo "$SIGNING_KEY_BASE64" | base64 -d > "$KEY_PATH"
 
-      - name: Build Target Bootloader
+            idf.py -DCONFIG_SECURE_BOOT_SIGNING_KEY="$KEY_PATH" bootloader
+
+      - name: Stage Output
         if: steps.cache-bootloader.outputs.cache-hit != 'true'
-        env:
-          SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
         run: |
-          KEY_PATH=$(mktemp /tmp/key.XXXXXX.pem)
-          trap 'shred -u "$KEY_PATH" 2>/dev/null || rm -f "$KEY_PATH"' EXIT
-          echo "$SIGNING_KEY_BASE64" | base64 -d > "$KEY_PATH"
-
-          # set SoC target and build bootloader
-          idf.py -C system/bootloader set-target ${{ matrix.target }}
-          idf.py -C system/bootloader -DCONFIG_SECURE_BOOT_SIGNING_KEY="$KEY_PATH" bootloader
-
-          # stage output for caching and upload
           mkdir -p bootloader_out
           cp system/bootloader/build/bootloader/bootloader.bin "bootloader_out/${{ matrix.target }}-bootloader.bin"
 
