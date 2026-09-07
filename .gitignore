@@ -1,8 +1,10 @@
 /shared/secrets/secrets.h
-/*/build
+/**/build
 boards/.test/
 
 /.pio
 /.vscode/
 /compile_commands.json
 /.cache
+
+/system/bootloader/sdkconfig
