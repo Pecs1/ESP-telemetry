@@ -52,14 +52,16 @@ jobs:
           command: |
             cd system/bootloader
 
-            KEY_PATH=$(mktemp /tmp/key.XXXXXX.pem)
-            trap 'shred -u "$KEY_PATH" 2>/dev/null || rm -f "$KEY_PATH"' EXIT
+            KEY_PATH="/tmp/sign-key.pem"
             echo "$SIGNING_KEY_BASE64" | base64 -d > "$KEY_PATH"
 
+            idf.py set-target ${{ matrix.target }}
             idf.py -DCONFIG_SECURE_BOOT_SIGNING_KEY="$KEY_PATH" bootloader
 
             mkdir -p "../../bootloader_out"
             cp build/bootloader/bootloader.bin "../../bootloader_out/${{ matrix.target }}-bootloader.bin"
+
+            rm -f "$KEY_PATH"
 
       - name: Upload Bootloader Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
