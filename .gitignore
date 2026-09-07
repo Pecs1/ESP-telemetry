@@ -2,6 +2,8 @@
 /**/build
 boards/.test/
 
+**.pem
+
 /.pio
 /.vscode/
 /compile_commands.json
