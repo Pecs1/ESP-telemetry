@@ -83,7 +83,6 @@ jobs:
             cp ./build/bootloader/bootloader.bin "../../bootloader_out/${{ matrix.target }}-bootloader.bin"
 
       - name: Upload Bootloader Artifact
-        if: steps.cache-bootloader.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: bootloader-${{ matrix.target }}
@@ -122,6 +121,13 @@ jobs:
           pattern: bootloader-*
           path: system/bootloaders
           merge-multiple: true
+      
+      - name: Verify Bootloader Files Exist
+        run: |
+          if [ -z "$(ls -A system/bootloaders 2>/dev/null)" ]; then
+            echo "ERROR: Bootloader directory 'system/bootloaders' is empty!"
+            exit 1
+          fi
 
       - name: Prepare Secrets & Build Firmware
         env:
