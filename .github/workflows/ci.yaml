@@ -47,26 +47,43 @@ jobs:
       - name: Build Target Bootloader
         if: steps.cache-bootloader.outputs.cache-hit != 'true'
         uses: espressif/esp-idf-ci-action@e6f5c74232b1ccd4c97ed641f1e48553853f1fd5 # v1.2.0
-        env:
-          SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
         with:
           esp_idf_version: v5.5.5
           target: ${{ matrix.target }}
           command: |
+            set -e
+
+            SIGNING_KEY_BASE64="${{ secrets.SIGNING_KEY_BASE64 }}"
+
+            if [ -z "$SIGNING_KEY_BASE64" ]; then
+              echo "ERROR: SIGNING_KEY_BASE64 secret is empty or not accessible in this job context!"
+              exit 1
+            fi
+
+            mkdir -p "bootloader_out"
             cd system/bootloader
 
-            KEY_PATH="/tmp/sign-key.pem"
-            echo "$SIGNING_KEY_BASE64" | base64 -d > "$KEY_PATH"
+            SIGNING_KEY_PATH="../signature-key.pem"
+            cleanup() {
+              shred -u "$SIGNING_KEY_PATH" 2>/dev/null || rm -f "$SIGNING_KEY_PATH"
+            }
+            trap 'cleanup' EXIT
+            echo "$SIGNING_KEY_BASE64" | base64 -d > "$SIGNING_KEY_PATH"
+
+            if [ ! -s "$SIGNING_KEY_PATH" ]; then
+              echo "ERROR: Decoded keyfile is 0 bytes! Base64 decoding failed."
+              exit 1
+            fi
 
             idf.py set-target ${{ matrix.target }}
-            idf.py -DCONFIG_SECURE_BOOT_SIGNING_KEY="$KEY_PATH" bootloader
+            idf.py bootloader
 
-            mkdir -p "../../bootloader_out"
-            cp build/bootloader/bootloader.bin "../../bootloader_out/${{ matrix.target }}-bootloader.bin"
+            python -m espsecure verify_signature --version 2 --keyfile $SIGNING_KEY_PATH ./build/bootloader/bootloader.bin
 
-            rm -f "$KEY_PATH"
+            cp ./build/bootloader/bootloader.bin "../../bootloader_out/${{ matrix.target }}-bootloader.bin"
 
       - name: Upload Bootloader Artifact
+        if: steps.cache-bootloader.outputs.cache-hit != 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: bootloader-${{ matrix.target }}

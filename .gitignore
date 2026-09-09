@@ -8,3 +8,6 @@ boards/.test/
 /.cache
 
 /system/bootloader/sdkconfig
+/system/bootloader/sdkconfig.old
+
+**.pem
