@@ -121,7 +121,7 @@ jobs:
           pattern: bootloader-*
           path: system/bootloaders
           merge-multiple: true
-      
+
       - name: Verify Bootloader Files Exist
         run: |
           if [ -z "$(ls -A system/bootloaders 2>/dev/null)" ]; then
