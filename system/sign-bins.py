@@ -23,13 +23,21 @@ if key_rel:
           print(f"\n[INFO] Signing {filename}...")
           
           # Sign to temporary output file
-          cmd = f'"{sys.executable}" -m espsecure sign-data -v 2 -k "{key_path}" -o "{temp_signed_path}" "{target_path}"'
+          cmd = f'"{sys.executable}" -m espsecure sign_data -v 2 -k "{key_path}" -o "{temp_signed_path}" "{target_path}"'
           
           if env.Execute(cmd) != 0:
                if os.path.exists(temp_signed_path):
                     os.remove(temp_signed_path)
                abort(f"espsecure failed to sign {filename}.")
           
+          # Verify the generated signature against the key
+          verify_cmd = f'"{sys.executable}" -m espsecure verify_signature --version 2 --keyfile "{key_path}" "{temp_signed_path}"'
+
+          if env.Execute(verify_cmd) != 0:
+               if os.path.exists(temp_signed_path):
+                    os.remove(temp_signed_path)
+               abort(f"espsecure signature verification failed for {filename}.")
+
           # Replace original file with signed file
           shutil.move(temp_signed_path, target_path)
           print(f"[SUCCESS] {filename} successfully signed!\n")
