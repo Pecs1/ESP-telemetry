@@ -142,8 +142,6 @@ jobs:
           trap 'shred -u "$SIGNING_KEY_PATH" 2>/dev/null || rm -f "$SIGNING_KEY_PATH"' EXIT
           echo "$SIGNING_KEY_BASE64" | base64 -d > "$SIGNING_KEY_PATH"
 
-          chmod -R +x $(python3 -c "import sys; print(sys.prefix)")/bin/ 2>/dev/null || true
-
           # build matrix env
           pio run -e ${{ matrix.env }}
 

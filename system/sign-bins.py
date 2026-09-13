@@ -23,7 +23,7 @@ if key_rel:
           print(f"\n[INFO] Signing {filename}...")
           
           # Sign to temporary output file
-          cmd = f'espsecure sign-data -v 2 -k "{key_path}" -o "{temp_signed_path}" "{target_path}"'
+          cmd = f'"{sys.executable}" -m espsecure sign-data -v 2 -k "{key_path}" -o "{temp_signed_path}" "{target_path}"'
           
           if env.Execute(cmd) != 0:
                if os.path.exists(temp_signed_path):
