@@ -1,7 +1,7 @@
 #pragma once
 
-#include <cstdint>
 #include <cstdarg>
+#include <cstdint>
 
 enum class LogLevel : uint8_t {
     DEBUG,
