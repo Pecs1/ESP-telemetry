@@ -1,12 +1,63 @@
 #include "./manager.h"
 
-#include "core.h"
+#include "utils/guard.h"
+#include "utils/logger.h"
 
 #include <WiFi.h>
 #include <WiFiType.h>
 
 #define MODULE_NAME "wifi"
 
+// *** protect functions to run only once ***
+void WifiManger::setupNormal(const char* ssid, const char* passwd) {
+    if (!wifiInitd) {
+        wifiInitd       = true;
+        wifiInitdNormal = true;
+        protectedSetupNormal(ssid, passwd);
+    } else {
+        if (wifiInitdMaint) {
+            guardBlockMSG(MODULE_NAME, "setupMaint");
+        } else if (wifiInitdFail) {
+            guardBlockMSG(MODULE_NAME, "setupFailSafe");
+        } else {
+            guardMSG();
+        }
+    }
+}
+
+void WifiManger::setupMaint(const char* ssid, const char* passwd) {
+    if (!wifiInitd) {
+        wifiInitd      = true;
+        wifiInitdMaint = true;
+        protectedSetupMaint(ssid, passwd);
+    } else {
+        if (wifiInitdNormal) {
+            guardBlockMSG(MODULE_NAME, "setupNormal");
+        } else if (wifiInitdFail) {
+            guardBlockMSG(MODULE_NAME, "setupFailSafe");
+        } else {
+            guardMSG();
+        }
+    }
+}
+
+void WifiManger::setupFailsafe(const char* ssid, const char* passwd) {
+    if (!wifiInitd) {
+        wifiInitd     = true;
+        wifiInitdFail = true;
+        protectedSetupFail(ssid, passwd);
+    } else {
+        if (wifiInitdNormal) {
+            guardBlockMSG(MODULE_NAME, "setupNormal");
+        } else if (wifiInitdMaint) {
+            guardBlockMSG(MODULE_NAME, "setupMaint");
+        } else {
+            guardMSG();
+        }
+    }
+}
+
+// *** protected wifi implementation ***
 void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
     logger.debug(MODULE_NAME, "setting to STA");
 

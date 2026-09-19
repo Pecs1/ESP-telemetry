@@ -1,6 +1,7 @@
 #include "./util.h"
 
-#include "core.h"
+#include "utils/guard.h"
+#include "utils/logger.h"
 #include "utils/retry.h"
 
 #include <esp_now.h>
@@ -16,6 +17,25 @@ namespace {
     }
 } // namespace
 
+// *** protect functions to run only once ***
+void EspNowUtil::init() {
+    if (!espnowInitd) {
+        espnowInitd = true;
+        protectedInit();
+    } else {
+        guardMSG();
+    }
+}
+
+void EspNowUtil::registerPeer(const uint8_t* address, uint8_t channel, bool encrypt) {
+    if (espnowInitd) {
+        protectedRegisterPeer(address, channel, encrypt);
+    } else {
+        guardDepsMSG(MODULE_NAME, "init");
+    }
+}
+
+// *** protected esp_now implementation ***
 void EspNowUtil::protectedInit() {
     retry(3, 2000, [&]() {
         // check if esp_now was initiated successfully

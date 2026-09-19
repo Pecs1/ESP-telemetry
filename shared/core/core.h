@@ -1,12 +1,10 @@
 #pragma once
 
-#include "utils/guard.h"
 #include "utils/logger.h"
 
 #include <Preferences.h>
 #include <cstdint>
 
-#define MODULE_NAME "core"
 #define SUBMODULE_NAME "prefs"
 
 // prefs
@@ -30,63 +28,24 @@ class CoreUtil {
     // starts up Serial
     //
     // - used to restrict some functions to setup only
-    void setup() {
-        if (!initSetup) {
-            initSetup = true;
-            protectedSetup();
-        } else {
-            guardMSG();
-        }
-    }
+    void setup();
 
     // checks individual keys for persistent storage if they exists
     //
     // - if a key doesnt exist, then it creates that key
     // - if a key does exist, then it does nothing
-    void checkKeys() {
-        if (initSetup && !checkedKeys) {
-            checkedKeys = true;
-            protectedCheckKeys();
-        } else if (!initSetup) {
-            guardBlockMSG(MODULE_NAME, "setup");
-        } else {
-            guardMSG();
-        }
-    }
+    void checkKeys();
 
     // reads mode from persistent storage
     //
     // - should be used together with setMode()
     // - should be used to run mode specific code
-    SystemMode readMode() {
-        if (initSetup && checkedKeys) {
-            return protectedReadMode();
-        }
-
-        if (!checkedKeys) {
-            guardDepsMSG(MODULE_NAME, "checkKeys");
-        }
-        if (!initSetup) {
-            guardDepsMSG(MODULE_NAME, "setup");
-        }
-        return SystemMode::UNKNOWN;
-    }
+    SystemMode readMode();
 
     // sets the mode used for the next reboot
     //
     // - should be used together with readMode()
-    void setMode(SystemMode nextMode) {
-        if (initSetup && checkedKeys) {
-            protectedSetMode(nextMode);
-        }
-
-        if (!checkedKeys) {
-            guardDepsMSG(MODULE_NAME, "checkKeys");
-        }
-        if (!initSetup) {
-            guardDepsMSG(MODULE_NAME, "setup");
-        }
-    }
+    void setMode(SystemMode nextMode);
 
   private:
     Preferences nvs;
@@ -98,8 +57,6 @@ class CoreUtil {
     // allow to run these function in code just once
     void protectedSetup();
     void protectedCheckKeys();
-
-    // allow to run after checking keys
     SystemMode protectedReadMode();
     void protectedSetMode(SystemMode nextMode);
 
@@ -134,6 +91,5 @@ class CoreUtil {
     }
 };
 #undef SUBMODULE_NAME
-#undef MODULE_NAME
 
 extern CoreUtil core;

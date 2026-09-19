@@ -1,10 +1,61 @@
 #include "./core.h"
 
+#include "utils/guard.h"
+
 #include <HardwareSerial.h>
 
 #define MODULE_NAME "core"
 #define SUBMODULE_NAME "prefs"
 
+// *** protect functions ***
+void CoreUtil::setup() {
+    if (!initSetup) {
+        initSetup = true;
+        protectedSetup();
+    } else {
+        guardMSG();
+    }
+}
+
+void CoreUtil::checkKeys() {
+    if (initSetup && !checkedKeys) {
+        checkedKeys = true;
+        protectedCheckKeys();
+    } else if (!initSetup) {
+        guardBlockMSG(MODULE_NAME, "setup");
+    } else {
+        guardMSG();
+    }
+}
+
+SystemMode CoreUtil::readMode() {
+    if (initSetup && checkedKeys) {
+        return protectedReadMode();
+    }
+
+    if (!checkedKeys) {
+        guardDepsMSG(MODULE_NAME, "checkKeys");
+    }
+    if (!initSetup) {
+        guardDepsMSG(MODULE_NAME, "setup");
+    }
+    return SystemMode::UNKNOWN;
+}
+
+void CoreUtil::setMode(SystemMode nextMode) {
+    if (initSetup && checkedKeys) {
+        protectedSetMode(nextMode);
+    }
+
+    if (!checkedKeys) {
+        guardDepsMSG(MODULE_NAME, "checkKeys");
+    }
+    if (!initSetup) {
+        guardDepsMSG(MODULE_NAME, "setup");
+    }
+}
+
+// *** protected core stuff ***
 void CoreUtil::protectedSetup() {
     Serial.begin(SERIAL_BAUD);
     delay(200);
