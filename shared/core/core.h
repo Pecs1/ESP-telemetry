@@ -1,19 +1,6 @@
 #pragma once
 
-#include "utils/logger.h"
-
-#include <Preferences.h>
 #include <cstdint>
-
-#define SUBMODULE_NAME "prefs"
-
-// prefs
-#define RW false // read-write
-#define RO true  // read-only
-
-inline constexpr const char* nvsName        = "sys_state";
-inline constexpr const char* currentModeKey = "current_mode";
-inline constexpr const char* nextModeKey    = "next_mode";
 
 enum class SystemMode : uint8_t {
     NORMAL   = 0,
@@ -48,8 +35,6 @@ class CoreUtil {
     void setMode(SystemMode nextMode);
 
   private:
-    Preferences nvs;
-
     // protection logic
     bool initSetup   = false;
     bool checkedKeys = false;
@@ -59,37 +44,5 @@ class CoreUtil {
     void protectedCheckKeys();
     SystemMode protectedReadMode();
     void protectedSetMode(SystemMode nextMode);
-
-    // helper to reduce code duplication
-    template <typename Func>
-    void checkKeyUtil(const char* key, Func&& arg) {
-        if (nvs.isKey(key) == false) {
-            logger.warn(SUBMODULE_NAME, "\"%s\" key not found", key);
-            logger.debug(SUBMODULE_NAME, "creating \"%s\" key", key);
-
-            arg(key);
-
-            logger.info(SUBMODULE_NAME, "\"%s\" key created", key);
-        }
-    }
-
-    // helper to print mode instead of uint value
-    constexpr const char* stringify(uint8_t mode) {
-        SystemMode m = static_cast<SystemMode>(mode);
-        switch (m) {
-            case SystemMode::NORMAL:
-                return "NORMAL";
-            case SystemMode::DEBUG:
-                return "DEBUG";
-            case SystemMode::MAINT:
-                return "MAINT";
-            case SystemMode::FAILSAFE:
-                return "FAILSAFE";
-            default:
-                return "UNKNOWN";
-        }
-    }
 };
-#undef SUBMODULE_NAME
-
 extern CoreUtil core;
