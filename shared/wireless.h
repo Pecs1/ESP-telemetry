@@ -10,8 +10,8 @@
 #endif
 
 #if !defined(WIRELESS_USE_WIFI) && !defined(WIRELESS_USE_ESPNOW) // && !defined(WIRELESS_USE_LORA)
-    #error "wireless.h: no protocol defined"
-    #warning You must define WIRELESS_USE_WIFI, WIRELESS_USE_ESPNOW, WIRELESS_USE_LORA, or WIRELESS_USE_ALL before including this file.
+    #error \
+        "wireless.h: no protocol defined... You must define WIRELESS_USE_WIFI, WIRELESS_USE_ESPNOW, WIRELESS_USE_LORA, or WIRELESS_USE_ALL before including this file."
 #endif
 
 #if defined(WIRELESS_USE_WIFI) || defined(WIRELESS_USE_ESPNOW)
