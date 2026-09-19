@@ -4,6 +4,7 @@
 #include "utils/logger.h"
 #include "utils/retry.h"
 
+#include <cstring>
 #include <esp_now.h>
 
 #define MODULE_NAME "espnow"
