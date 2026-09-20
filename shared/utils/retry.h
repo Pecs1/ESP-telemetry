@@ -1,32 +1,20 @@
 #pragma once
 
-#include "core.h"
-
-#include <Arduino.h>
-
-#define MODULE_NAME "retry"
+#include <type_traits>
 
 #define retry(maxRetries, delayMS, ...) \
     executeRetry(MODULE_NAME, __FUNCTION__, maxRetries, delayMS, __VA_ARGS__)
 
-inline void executeRetry(const char* file, const char* function, int maxRetries, int delayMS,
-                         const std::function<bool()>& action) {
-    for (int i = 1; i <= maxRetries; i++) {
-        if (action()) {
-            logger.debug(MODULE_NAME, "function \"%s.%s\" succeeded", file, function);
-            return;
-        }
-        logger.err(MODULE_NAME, "function \"%s.%s\" failed %i/%i times", file, function, i,
-                   maxRetries);
+using RetryFn = bool (*)(void* userCtx);
 
-        // dont apply the delay on the last failed attempt
-        if (i < maxRetries) {
-            delay(delayMS);
-        }
-    }
-    logger.crit(MODULE_NAME, "function \"%s.%s\" failed %i times!", file, function, maxRetries);
-    core.setMode(SystemMode::FAILSAFE);
-    logger.warn("core", "Rebooting to FAILSAFE!");
-    ESP.restart();
+void retryExecutor(const char* file, const char* function, int maxRetries, int delayMS, RetryFn fn,
+                   void* userCtx);
+
+template <typename Func>
+inline void executeRetry(const char* file, const char* function, int maxRetries, int delayMS,
+                         Func&& action) {
+    auto invoker = [](void* ctx) -> bool {
+        return (*static_cast<typename std::remove_reference<Func>::type*>(ctx))();
+    };
+    retryExecutor(file, function, maxRetries, delayMS, invoker, static_cast<void*>(&action));
 }
-#undef MODULE_NAME
