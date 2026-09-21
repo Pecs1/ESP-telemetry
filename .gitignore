@@ -7,7 +7,8 @@ boards/.test/
 /compile_commands.json
 /.cache
 
-/system/bootloader/sdkconfig
-/system/bootloader/sdkconfig.old
+/system/build-bootloader/sdkconfig
+/system/build-bootloader/sdkconfig.old
+/system/bootloaders/*
 
 **.pem
