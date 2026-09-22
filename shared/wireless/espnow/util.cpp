@@ -32,7 +32,7 @@ void EspNowUtil::registerPeer(const uint8_t* address, uint8_t channel, bool encr
     if (espnowInitd) {
         protectedRegisterPeer(address, channel, encrypt);
     } else {
-        guardDepsMSG(MODULE_NAME, "init");
+        guardDepsMSG("init");
     }
 }
 

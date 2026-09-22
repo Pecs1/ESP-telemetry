@@ -9,16 +9,15 @@ void executeMSG(const char* module, const char* function) {
     logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", module, function);
 }
 
-void executeDepsMSG(const char* calledModule, const char* calledFunction,
-                    const char* blockedByModule, const char* blockedByFunction) {
-    logger.err(MODULE_NAME, "you can use \"%s.%s\" after calling \"%s.%s\"", calledModule,
-               calledFunction, blockedByModule, blockedByFunction);
-    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledModule, calledFunction);
+void executeDepsMSG(const char* module, const char* calledFunction, const char* blockedByFunction) {
+    logger.err(MODULE_NAME, "you can use \"%s.%s\" after calling \"%s.%s\"", module, calledFunction,
+               module, blockedByFunction);
+    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", module, calledFunction);
 }
 
-void executeBlockMSG(const char* calledModule, const char* calledFunction,
-                     const char* blockedByModule, const char* blockedByFunction) {
-    logger.err(MODULE_NAME, "function \"%s.%s\" is blocked by \"%s.%s\"", calledModule,
-               calledFunction, blockedByModule, blockedByFunction);
-    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", calledModule, calledFunction);
+void executeBlockMSG(const char* module, const char* calledFunction,
+                     const char* blockedByFunction) {
+    logger.err(MODULE_NAME, "function \"%s.%s\" is blocked by \"%s.%s\"", module, calledFunction,
+               module, blockedByFunction);
+    logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", module, calledFunction);
 }

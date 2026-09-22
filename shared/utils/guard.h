@@ -3,17 +3,14 @@
 // macros
 #define guardMSG() executeMSG(MODULE_NAME, __FUNCTION__)
 
-#define guardDepsMSG(blockedByModule, blockedByFunction) \
-    executeDepsMSG(MODULE_NAME, __FUNCTION__, blockedByModule, blockedByFunction)
+#define guardDepsMSG(blockedByFunction) executeDepsMSG(MODULE_NAME, __FUNCTION__, blockedByFunction)
 
-#define guardBlockMSG(blockedByModule, blockedByFunction) \
-    executeBlockMSG(MODULE_NAME, __FUNCTION__, blockedByModule, blockedByFunction)
+#define guardBlockMSG(blockedByFunction) \
+    executeBlockMSG(MODULE_NAME, __FUNCTION__, blockedByFunction)
 
 // functions
 void executeMSG(const char* module, const char* function);
 
-void executeDepsMSG(const char* calledModule, const char* calledFunction,
-                    const char* blockedByModule, const char* blockedByFunction);
+void executeDepsMSG(const char* module, const char* calledFunction, const char* blockedByFunction);
 
-void executeBlockMSG(const char* calledModule, const char* calledFunction,
-                     const char* blockedByModule, const char* blockedByFunction);
+void executeBlockMSG(const char* module, const char* calledFunction, const char* blockedByFunction);

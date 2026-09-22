@@ -66,7 +66,7 @@ void CoreUtil::checkKeys() {
         checkedKeys = true;
         protectedCheckKeys();
     } else if (!initSetup) {
-        guardBlockMSG(MODULE_NAME, "setup");
+        guardBlockMSG("setup");
     } else {
         guardMSG();
     }
@@ -78,10 +78,10 @@ SystemMode CoreUtil::readMode() {
     }
 
     if (!checkedKeys) {
-        guardDepsMSG(MODULE_NAME, "checkKeys");
+        guardDepsMSG("checkKeys");
     }
     if (!initSetup) {
-        guardDepsMSG(MODULE_NAME, "setup");
+        guardDepsMSG("setup");
     }
     return SystemMode::UNKNOWN;
 }
@@ -92,10 +92,10 @@ void CoreUtil::setMode(SystemMode nextMode) {
     }
 
     if (!checkedKeys) {
-        guardDepsMSG(MODULE_NAME, "checkKeys");
+        guardDepsMSG("checkKeys");
     }
     if (!initSetup) {
-        guardDepsMSG(MODULE_NAME, "setup");
+        guardDepsMSG("setup");
     }
 }
 

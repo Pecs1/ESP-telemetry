@@ -16,9 +16,9 @@ void WifiManger::setupNormal(const char* ssid, const char* passwd) {
         protectedSetupNormal(ssid, passwd);
     } else {
         if (wifiInitdMaint) {
-            guardBlockMSG(MODULE_NAME, "setupMaint");
+            guardBlockMSG("setupMaint");
         } else if (wifiInitdFail) {
-            guardBlockMSG(MODULE_NAME, "setupFailSafe");
+            guardBlockMSG("setupFailSafe");
         } else {
             guardMSG();
         }
@@ -32,9 +32,9 @@ void WifiManger::setupMaint(const char* ssid, const char* passwd) {
         protectedSetupMaint(ssid, passwd);
     } else {
         if (wifiInitdNormal) {
-            guardBlockMSG(MODULE_NAME, "setupNormal");
+            guardBlockMSG("setupNormal");
         } else if (wifiInitdFail) {
-            guardBlockMSG(MODULE_NAME, "setupFailSafe");
+            guardBlockMSG("setupFailSafe");
         } else {
             guardMSG();
         }
@@ -48,9 +48,9 @@ void WifiManger::setupFailsafe(const char* ssid, const char* passwd) {
         protectedSetupFail(ssid, passwd);
     } else {
         if (wifiInitdNormal) {
-            guardBlockMSG(MODULE_NAME, "setupNormal");
+            guardBlockMSG("setupNormal");
         } else if (wifiInitdMaint) {
-            guardBlockMSG(MODULE_NAME, "setupMaint");
+            guardBlockMSG("setupMaint");
         } else {
             guardMSG();
         }
