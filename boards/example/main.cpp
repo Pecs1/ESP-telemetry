@@ -2,6 +2,7 @@
  * NOTICE:
  * - You can use this file as a template or starting point for your project.
  * - Rename `secrets.example.h` to `secrets.h` in `/shared/secrets`.
+ * - Download bootloader (or build yourself a custom one) and put it into `system/bootloaders`
  * - Now you can add your credentials/secrets.
  * - Set BOARD_NAME below to match your hardware setup.
  * - Set correct flag for wireless to your use case

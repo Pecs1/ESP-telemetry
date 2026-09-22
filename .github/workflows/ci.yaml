@@ -61,7 +61,7 @@ jobs:
             fi
 
             mkdir -p "bootloader_out"
-            cd system/bootloader
+            cd system/build-bootloader
 
             SIGNING_KEY_PATH="../signature-key.pem"
             cleanup() {
