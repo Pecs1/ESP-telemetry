@@ -6,6 +6,18 @@ import sys
 project_dir = env.subst("$PROJECT_DIR")
 key_rel = os.getenv("SIGNING_KEY_PATH") or env.GetProjectOption("board_build.signing_key", "")
 
+platform = env.PioPlatform()
+esptool_dir = platform.get_package_dir("tool-esptoolpy")
+
+if not esptool_dir or not os.path.isdir(esptool_dir):
+     sys.stderr.write("\n[ERROR] PlatformIO package 'tool-esptoolpy' is missing!\n\n")
+     env.Exit(1)
+
+# Add PlatformIO's tool-esptoolpy package to PYTHONPATH
+exec_env = os.environ.copy()
+existing_pythonpath = exec_env.get("PYTHONPATH", "")
+exec_env["PYTHONPATH"] = f"{esptool_dir}{os.pathsep}{existing_pythonpath}" if existing_pythonpath else esptool_dir
+
 def abort(msg):
      sys.stderr.write(f"\n[ERROR] {msg}\n\n")
      env.Exit(1)
