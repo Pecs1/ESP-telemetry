@@ -46,7 +46,6 @@ jobs:
   build-bootloaders:
     name: Build Bootloader [target:${{ matrix.target }}]
     runs-on: ubuntu-latest
-    needs: formatting-check
     strategy:
       fail-fast: false
       matrix:
