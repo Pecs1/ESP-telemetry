@@ -106,15 +106,70 @@ jobs:
           name: bootloader-${{ matrix.target }}
           path: bootloader_out/*
 
+  determine-targets:
+    name: Determine Build Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      targets: ${{ steps.set-matrix.outputs.targets }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Filter Changed Paths
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          filters: |
+            shared:
+              - 'shared/**'
+              - 'system/**'
+              - 'platformio.ini'
+              - '.github/workflows/**'
+            gps:
+              - 'boards/gps/**'
+            main:
+              - 'boards/main/**'
+            r-lora:
+              - 'boards/R-LoRa/**'
+            s-lora:
+              - 'boards/S-LoRa/**'
+            temps:
+              - 'boards/temps/**'
+
+      - name: Compute Target Matrix
+        id: set-matrix
+        run: |
+          ALL_ENVS='["gps", "main", "r-lora", "s-lora", "temps"]'
+
+          # Force full matrix on tags or when shared code changes
+          if [[ "${{ github.ref }}" == refs/tags/* ]] || [ "${{ steps.filter.outputs.shared }}" == "true" ]; then
+            echo "targets=$ALL_ENVS" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          ENVS=()
+          [ "${{ steps.filter.outputs.gps }}" == "true" ] && ENVS+=('"gps"')
+          [ "${{ steps.filter.outputs.main }}" == "true" ] && ENVS+=('"main"')
+          [ "${{ steps.filter.outputs.r-lora }}" == "true" ] && ENVS+=('"r-lora"')
+          [ "${{ steps.filter.outputs.s-lora }}" == "true" ] && ENVS+=('"s-lora"')
+          [ "${{ steps.filter.outputs.temps }}" == "true" ] && ENVS+=('"temps"')
+
+          # If no specific board match was triggered, default to building all
+          if [ ${#ENVS[@]} -eq 0 ]; then
+            echo "targets=$ALL_ENVS" >> $GITHUB_OUTPUT
+          else
+            JSON_ARRAY="[$(IFS=,; echo "${ENVS[*]}")]"
+            echo "targets=$JSON_ARRAY" >> $GITHUB_OUTPUT
+          fi
+
   build:
     name: Build [env:${{ matrix.env }}]
     runs-on: ubuntu-latest
-    needs: [formatting-check, build-bootloaders]
+    needs: [formatting-check, build-bootloaders, determine-targets]
 
     strategy:
       fail-fast: false
       matrix:
-        env: [gps, main, r-lora, s-lora, temps]
+        env: ${{ fromJson(needs.determine-targets.outputs.targets) }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
