@@ -1,18 +1,22 @@
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
 /*
- * NOTICE:
- * - You can use this file as a template or starting point for your project.
- * - Rename `secrets.example.h` to `secrets.h` in `/shared/secrets`.
- * - Download bootloader (or build yourself a custom one) and put it into `system/bootloaders`
- * - Now you can add your credentials/secrets.
- * - Set BOARD_NAME below to match your hardware setup.
- * - Set correct flag for wireless to your use case
+ * NOTICE & QUICK START:
+ * - Use this file as a starting point or template for new board implementations.
  *
- * - At the time of this writing, you can include my headers in any order,
- * after defining the "BOARD_NAME", if that will change some day, i will add warnings ^^
+ * SETUP INSTRUCTIONS:
+ * 1. Bootloader: Build the required bootloader by following "Step 1" in README.md
+ *    (copies binary to `system/bootloaders/esp32-bootloader.bin`).
+ * 2. Secrets: Rename `secrets.example.h` to `secrets.h` in `/shared/secrets`
+ *    and fill in your credentials.
+ * 3. Configuration:
+ *    - Define `BOARD_NAME` below to match your hardware setup.
+ *    - Set the appropriate wireless flags/mode for your use case.
  *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * NOTE:
+ * - `BOARD_NAME` must be defined BEFORE including project headers.
  */
 
 // since im using pioarduino (fork of platformio)
@@ -25,14 +29,14 @@
 //   should be unique if you plan to use more boards...
 #define BOARD_NAME "YourBoard"
 
-// - used to only include only the protocols you will need
+// - used to include only the protocols you will need
 //   options:
 //     - WIRELESS_USE_WIFI   - includes only wifi
 //     - WIRELESS_USE_ESPNOW - includes wifi and espnow
 //     - WIRELESS_USE_ALL    - includes all protocols
 #define WIRELESS_USE_ESPNOW
 
-// contains core things/utilities, persistant storage, logger...
+// contains core things/utilities, persistent storage, logger...
 #include "core.h"
 
 // includes wifi + espnow utility
@@ -46,11 +50,11 @@ void setup() {
     // starts serial monitor
     core.setup();
 
-    // checks and create missing keys for later use
+    // checks and creates missing keys for later use
     // e.g. used to change modes after rebooting
     core.checkKeys();
 
-    // reads the mode, that was set with "core.setMode()"
+    // reads the mode that was set with "core.setMode()"
     //
     // usage: you could run/load mode specific code
     mode = core.readMode();
