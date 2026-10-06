@@ -4,10 +4,10 @@
 // for cleaner include ^^
 
 // include core utilities
-#include "core/core.h"
+#include "atria/core/atria.h"
 
 // logger util
-#include "utils/logger.h"
+#include "atria/utils/logger.h"
 
 // your secrets
-#include "secrets/secrets.h"
+#include "atria/secrets/secrets.h"

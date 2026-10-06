@@ -1,9 +1,8 @@
 #include "logger.h"
 
-#include "utils/colors.h"
+#include "atria/utils/colors.h"
 
 #include <HardwareSerial.h>
-#include <cstdint>
 
 void LogUtil::debug(const char* component, const char* fmt, ...) {
     if (LogLevel::DEBUG < minLevel) {

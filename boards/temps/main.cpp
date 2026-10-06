@@ -1,7 +1,7 @@
 #include <Arduino.h>
 
 // my lib
-#include "core.h"
+#include "atria/core.h"
 // #include "wireless.h"
 
 #include <DallasTemperature.h>
