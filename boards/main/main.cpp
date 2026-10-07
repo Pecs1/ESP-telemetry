@@ -7,6 +7,7 @@
 
 extern "C" void app_main() {
     initArduino();
+    logger.silenceBootloader();
     setup();
     while (true) {
         loop();

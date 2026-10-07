@@ -18,6 +18,8 @@ class LogUtil {
         minLevel = level;
     }
 
+    void silenceBootloader();
+
     void debug(const char* component, const char* fmt, ...) __attribute__((format(printf, 3, 4)));
     void info(const char* component, const char* fmt, ...) __attribute__((format(printf, 3, 4)));
     void warn(const char* component, const char* fmt, ...) __attribute__((format(printf, 3, 4)));
