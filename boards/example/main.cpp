@@ -19,9 +19,9 @@
  * - `BOARD_NAME` must be defined BEFORE including project headers.
  */
 
-// since im using pioarduino (fork of platformio)
-// you must set this at the top
 #include <Arduino.h>
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
 // NOTICE:
 // you must set these macros before including wireless.h
@@ -36,11 +36,21 @@
 //     - WIRELESS_USE_ALL    - includes all protocols
 #define WIRELESS_USE_ESPNOW
 
-// contains core things/utilities, persistent storage, logger...
-#include "core.h"
+// contains core things/utilities, persistant storage, logger...
+#include "atria/core.h"
 
 // includes wifi + espnow utility
-#include "wireless.h"
+#include "atria/wireless.h"
+
+// required to have framework = arduino, espidf
+extern "C" void app_main() {
+    initArduino();
+    setup();
+    while (true) {
+        loop();
+        vTaskDelay(1 / portTICK_PERIOD_MS);
+    }
+}
 
 // note: you can rename "mode" to your liking
 // must be set after including core.h

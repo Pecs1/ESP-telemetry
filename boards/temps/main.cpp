@@ -1,8 +1,19 @@
 #include <Arduino.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 // my lib
 #include "atria/core.h"
-// #include "wireless.h"
+// #include "atria/wireless.h"
+
+extern "C" void app_main() {
+    initArduino();
+    setup();
+    while (true) {
+        loop();
+        vTaskDelay(1 / portTICK_PERIOD_MS);
+    }
+}
 
 #include <DallasTemperature.h>
 #include <OneWire.h>
