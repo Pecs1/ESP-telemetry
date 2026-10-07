@@ -1,6 +1,8 @@
 #include <Arduino.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
+
+#define BOARD_NAME "S-LoRa"
 
 #include "atria/core.h"
 // #include "atria/wireless.h"

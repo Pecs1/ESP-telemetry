@@ -1,8 +1,9 @@
 #include <Arduino.h>
-#include "freertos/FreeRTOS.h"
-#include "freertos/task.h"
+#include <freertos/FreeRTOS.h>
+#include <freertos/task.h>
 
-// my lib
+#define BOARD_NAME "Temps"
+
 #include "atria/core.h"
 // #include "atria/wireless.h"
 
