@@ -7,11 +7,9 @@
  * - Use this file as a starting point or template for new board implementations.
  *
  * SETUP INSTRUCTIONS:
- * 1. Bootloader: Build the required bootloader by following "Step 1" in README.md
- *    (copies binary to `system/bootloaders/esp32-bootloader.bin`).
- * 2. Secrets: Rename `secrets.example.h` to `secrets.h` in `/shared/secrets`
+ * 1. Secrets: Rename `secrets.example.h` to `secrets.h` in `/atria/secrets`
  *    and fill in your credentials.
- * 3. Configuration:
+ * 2. Configuration:
  *    - Define `BOARD_NAME` below to match your hardware setup.
  *    - Set the appropriate wireless flags/mode for your use case.
  *
