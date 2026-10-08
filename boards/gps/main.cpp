@@ -1,7 +1,3 @@
-#include <Arduino.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-
 #define BOARD_NAME "GPS"
 #define WIRELESS_USE_ESPNOW
 
@@ -9,13 +5,7 @@
 #include "atria/wireless.h"
 
 extern "C" void app_main() {
-    initArduino();
-    logger.silenceBootloader();
-    setup();
-    while (true) {
-        loop();
-        vTaskDelay(1 / portTICK_PERIOD_MS);
-    }
+    initApp();
 }
 
 SystemMode mode;

@@ -17,10 +17,6 @@
  * - `BOARD_NAME` must be defined BEFORE including project headers.
  */
 
-#include <Arduino.h>
-#include <freertos/FreeRTOS.h>
-#include <freertos/task.h>
-
 // NOTICE:
 // you must set these macros before including wireless.h
 // - used to differentiate the boards when they are in AP mode
@@ -42,13 +38,7 @@
 
 // required to have framework = arduino, espidf
 extern "C" void app_main() {
-    initArduino();
-    logger.silenceBootloader();
-    setup();
-    while (true) {
-        loop();
-        vTaskDelay(1 / portTICK_PERIOD_MS);
-    }
+    initApp();
 }
 
 // note: you can rename "mode" to your liking
