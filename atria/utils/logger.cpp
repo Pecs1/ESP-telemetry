@@ -1,9 +1,13 @@
 #include "logger.h"
 
-#include "utils/colors.h"
+#include "atria/utils/colors.h"
 
 #include <HardwareSerial.h>
-#include <cstdint>
+#include <esp_log.h>
+
+void LogUtil::silenceBootloader() {
+    esp_log_level_set("*", ESP_LOG_NONE);
+}
 
 void LogUtil::debug(const char* component, const char* fmt, ...) {
     if (LogLevel::DEBUG < minLevel) {

@@ -1,7 +1,7 @@
-#include "./core.h"
+#include "./atria.h"
 
-#include "utils/guard.h"
-#include "utils/logger.h"
+#include "atria/utils/guard.h"
+#include "atria/utils/logger.h"
 
 #include <HardwareSerial.h>
 #include <Preferences.h>

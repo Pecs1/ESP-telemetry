@@ -1,7 +1,7 @@
 #include "./manager.h"
 
-#include "utils/guard.h"
-#include "utils/logger.h"
+#include "atria/utils/guard.h"
+#include "atria/utils/logger.h"
 
 #include <WiFi.h>
 #include <WiFiType.h>

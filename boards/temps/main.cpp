@@ -1,8 +1,11 @@
-#include <Arduino.h>
+#define BOARD_NAME "Temps"
 
-// my lib
-#include "core.h"
-// #include "wireless.h"
+#include "atria/core.h"
+// #include "atria/wireless.h"
+
+extern "C" void app_main() {
+    initApp();
+}
 
 #include <DallasTemperature.h>
 #include <OneWire.h>

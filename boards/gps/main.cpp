@@ -1,10 +1,12 @@
-#include <Arduino.h>
-
 #define BOARD_NAME "GPS"
 #define WIRELESS_USE_ESPNOW
 
-#include "core.h"
-#include "wireless.h"
+#include "atria/core.h"
+#include "atria/wireless.h"
+
+extern "C" void app_main() {
+    initApp();
+}
 
 SystemMode mode;
 

@@ -68,3 +68,4 @@ if key_rel:
      # Attach signing hooks
      env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", sign_bin)
      env.AddPostAction("$BUILD_DIR/partitions.bin", sign_bin)
+     env.AddPostAction("$BUILD_DIR/bootloader.bin", sign_bin)

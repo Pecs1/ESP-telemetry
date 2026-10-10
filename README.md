@@ -7,7 +7,7 @@
 
 Project to send telemetry data to an [ESP-Website](https://github.com/Pecs1/ESP-Website) for the [Shell eco-marathon](https://www.shellecomarathon.com/) competition.
 
-[![Lint check & Platformio build](https://github.com/Pecs1/ESP-telemetry/actions/workflows/ci.yaml/badge.svg)](https://github.com/Pecs1/ESP-telemetry/actions/workflows/ci.yaml)
+[![Lint check & Build](https://github.com/Pecs1/ESP-telemetry/actions/workflows/ci.yaml/badge.svg)](https://github.com/Pecs1/ESP-telemetry/actions/workflows/ci.yaml)
 
 </div>
 
@@ -45,16 +45,8 @@ Located in the [`/boards`](./boards) directory:
 
 ---
 
-## Prerequisites & Environment Setup
+## Prerequisites
 
-### 1. ESP-IDF
-
-Install [esp-idf v5.5.5](https://github.com/espressif/esp-idf/releases/tag/v5.5.5) manually or use your package manager to obtain `esp-idf v5.5.5`.
-
-> [!Important]
-> Make sure you have the correct esp-idf version downloaded.
-
-### 2. IDE & Extensions
 It's best to use **VS Code** or **VSCodium** with the following required extensions:
 
 * [clangd](https://open-vsx.org/vscode/item?itemName=llvm-vs-code-extensions.vscode-clangd)
@@ -65,44 +57,36 @@ It's best to use **VS Code** or **VSCodium** with the following required extensi
 
 ---
 
-## Development & Setup
+## Setup & Development
 
 Follow these steps sequentially to set up and start developing on the project.
 
-### Step 1: Building Bootloader
+### Step 1: Creating Signature Key
+
+> [!Important]
+> Creating signature key is a mandatory initial setup step. Ensure you have **esptool v5.x** installed before proceeding.
 
 > [!Note]
-> Building the bootloader is a mandatory initial setup step. You must repeat steps 2 through 9 each time you update sdkconfigs inside `/system/build-bootloader`.
+> You have to run this just once though.
 
 ```bash
-
-# 1. clone the repo & enter it
-git clone https://github.com/Pecs1/ESP-telemetry.git && cd ESP-telemetry
+# 1. clone the repo
+git clone https://github.com/Pecs1/ESP-telemetry.git
 
 # 2. head to this directory
-cd system/build-bootloader
+cd ESP-telemetry/system
 
-# 3. source esp-idf (for example: idf)
-idf
+# 3. install esptool, for example:
+sudo pacman -Sy esptool
 
-# 4. generate signature key for secure boot (**RUN ONLY ONCE**)
-espsecure generate-signing-key --version 2 --scheme rsa3072 ../signature-key.pem
+# 4. generate signature key for secure boot
+espsecure generate-signing-key --version 2 --scheme rsa3072 ./signature-key.pem
 
-# 5. clean old configs (you can skip this if you are running this for the first time)
-idf.py fullclean
+# 5. return back to ESP-telemetry root
+cd ../
 
-# 6. set targets to ESP-IDF
-idf.py set-target esp32
-
-# 7. build the bootloader
-idf.py bootloader
-
-# 8. copy build bootloader to directory pio expects
-cp build/bootloader/bootloader.bin ../bootloaders/esp32-bootloader.bin
-# note that pio expects <target from step 6>-bootloader.bin
-
-# 9. return back to ESP-telemetry root
-cd ../../
+# optionally uninstall esptool
+sudo pacman -Rns esptool
 ```
 
 ### Step 2: Developing & Building
@@ -110,7 +94,7 @@ cd ../../
 > [!Note]
 > The `example` board is regularly updated with new features and fixes.
 
-1. Ensure the [required extensions](#2-ide--extensions) are installed and active.
+1. Ensure you have the [required prerequisites](#prerequisites) installed and extensions active.
 2. **Explore the example project:** Open [/boards/example/main.cpp](./boards/example/main.cpp). 
 3. **Read the file header:** Please read the notice at the top of `main.cpp`. It's there for you!
 

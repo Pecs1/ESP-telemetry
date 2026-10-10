@@ -1,7 +1,7 @@
 #include "retry.h"
 
-#include "core.h"
-#include "utils/logger.h"
+#include "atria/core/atria.h"
+#include "atria/utils/logger.h"
 
 #include <Arduino.h>
 

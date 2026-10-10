@@ -1,6 +1,6 @@
 #pragma once
 
-#include "secrets/secrets.h"
+#include "atria/secrets/secrets.h"
 
 #ifndef BOARD_NAME
     #define BOARD_NAME "NAMELESS!"
