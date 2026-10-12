@@ -95,7 +95,7 @@ void CoreUtil::protectedCheckKeys() {
     logger.debug(MODULE_NAME, "checking keys");
 
     prefs.keyGenerator();
-    
+
     logger.info(MODULE_NAME, "successfuly checked keys");
 }
 
