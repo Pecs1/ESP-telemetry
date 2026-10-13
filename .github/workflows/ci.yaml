@@ -24,24 +24,24 @@ jobs:
     name: Check Formatting
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-    - name: Check for C/C++ file changes
-      uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
-      id: changes
-      with:
-        filters: |
-          cpp:
-            - '**/*.cpp'
-            - '**/*.c'
-            - '**/*.h'
-            - '**/*.hpp'
+      - name: Check for C/C++ file changes
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: changes
+        with:
+          filters: |
+            cpp:
+              - '**/*.cpp'
+              - '**/*.c'
+              - '**/*.h'
+              - '**/*.hpp'
 
-    - name: Run clang-format style check
-      if: steps.changes.outputs.cpp == 'true'
-      uses: jidicula/clang-format-action@654a770daa28443dd111d133e4083e21c1075674 # v4.18.0
-      with:
-        clang-format-version: '22'
+      - name: Run clang-format style check
+        if: steps.changes.outputs.cpp == 'true'
+        uses: jidicula/clang-format-action@654a770daa28443dd111d133e4083e21c1075674 # v4.18.0
+        with:
+          clang-format-version: '22'
 
   determine-targets:
     name: Determine Build Targets
