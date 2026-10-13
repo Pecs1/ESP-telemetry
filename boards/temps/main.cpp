@@ -17,8 +17,6 @@ OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
 
 void setup() {
-    core.setup();
-
     sensors.begin();
 }
 

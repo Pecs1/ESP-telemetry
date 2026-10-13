@@ -46,13 +46,6 @@ extern "C" void app_main() {
 SystemMode mode;
 
 void setup() {
-    // starts serial monitor
-    core.setup();
-
-    // checks and creates missing keys for later use
-    // e.g. used to change modes after rebooting
-    core.checkKeys();
-
     // reads the mode that was set with "core.setMode()"
     //
     // usage: you could run/load mode specific code

@@ -11,10 +11,6 @@ extern "C" void app_main() {
 SystemMode mode;
 
 void setup() {
-    core.setup();
-
-    core.checkKeys();
-
     mode = core.readMode();
 
     switch (mode) {
