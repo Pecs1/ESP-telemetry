@@ -94,8 +94,9 @@ void WifiManger::protectedSetupNormal(const char* ssid, const char* passwd) {
 
     if (shouldConnect) {
         esp_wifi_connect();
+        logger.info(MODULE_NAME, "started STA");
     } else {
-        logger.info(MODULE_NAME, "STA started without connecting");
+        logger.warn(MODULE_NAME, "STA started without connecting");
     }
 }
 
@@ -152,9 +153,10 @@ void WifiManger::protectedSetupFail(const char* ssidAP, const char* passwdAP, co
 
     if (shouldConnect) {
         esp_wifi_connect();
+        logger.info(MODULE_NAME, "started AP+STA");
+    } else {
+        logger.warn(MODULE_NAME, "started AP+STA, but STA started without connecting");
     }
-
-    logger.info(MODULE_NAME, "started AP+STA");
 }
 #undef MODULE_NAME
 
