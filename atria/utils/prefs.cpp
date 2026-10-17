@@ -71,7 +71,6 @@ void Prefs::keyWriter(const char* key, uint8_t value) {
 }
 
 // *** protected functions ***
-
 void Prefs::protectedKeyGenerator() {
     open(rw); // open in RW
 
@@ -86,9 +85,11 @@ void Prefs::protectedKeyGenerator() {
 uint8_t Prefs::protectedKeyReader(const char* key) {
     open(ro); // open in RO
 
-    return nvs.getUChar(key);
+    uint8_t value = nvs.getUChar(key);
 
     close();
+
+    return value;
 }
 
 void Prefs::protectedKeyWriter(const char* key, uint8_t value) {
