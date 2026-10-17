@@ -103,11 +103,17 @@ jobs:
             fi
           fi
 
-          # Build JSON array of target objects: [{"env":"gps","mcu":"esp32"}, ...]
+          declare -A SEEN_MCU=()
           JSON_ITEMS=()
           for board in "${ACTIVE_BOARDS[@]}"; do
             mcu="${MCU_MAP[$board]}"
-            JSON_ITEMS+=("{\"env\":\"$board\",\"mcu\":\"$mcu\"}")
+            if [ -z "${SEEN_MCU[$mcu]:-}" ]; then
+              SEEN_MCU[$mcu]=1
+              boot=true
+            else
+              boot=false
+            fi
+            JSON_ITEMS+=("{\"env\":\"$board\",\"mcu\":\"$mcu\",\"boot\":\"$boot\"}")
           done
 
           MATRIX_JSON="[$(IFS=,; echo "${JSON_ITEMS[*]}")]"
@@ -204,11 +210,16 @@ jobs:
             exit 1
           fi
 
-          # MCU Bootloader from .pio build directory
-          if [ -f ".pio/build/${{ matrix.env }}/bootloader.bin" ]; then
-            cp ".pio/build/${{ matrix.env }}/bootloader.bin" "release_artifacts/bootloader-${{ matrix.mcu }}.bin"
-          else
-            echo "::warning::No bootloader.bin found for ${{ matrix.env }}"
+          # Bootloader: only the designated board per MCU stages it
+          if [ "${{ matrix.boot }}" == "true" ]; then
+            BL=".pio/build/${{ matrix.env }}/bootloader.bin"
+            if [ -f "$BL" ]; then
+              cp "$BL" "release_artifacts/bootloader-${{ matrix.mcu }}.bin"
+            else
+              echo "::error::No bootloader.bin for ${{ matrix.env }}. Found:"
+              find ".pio/build/${{ matrix.env }}" -name '*.bin'
+              exit 1
+            fi
           fi
 
       - name: Upload Board Firmware Artifact
@@ -217,13 +228,13 @@ jobs:
           name: firmware-${{ matrix.env }}
           path: release_artifacts/firmware-${{ matrix.env }}.bin
 
-      - name: Upload Shared MCU Bootloader Artifact
-        if: hashFiles(format('release_artifacts/bootloader-{0}.bin', matrix.mcu)) != ''
+      - name: Upload MCU Bootloader Artifact
+        if: matrix.boot == 'true'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: bootloader-${{ matrix.mcu }}
           path: release_artifacts/bootloader-${{ matrix.mcu }}.bin
-          overwrite: true
+          if-no-files-found: error
 
   release:
     name: Publish GitHub Release
