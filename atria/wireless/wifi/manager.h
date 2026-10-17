@@ -2,6 +2,8 @@
 
 #include "atria/secrets/secrets.h"
 
+#include <stddef.h>
+
 #ifndef BOARD_NAME
     #define BOARD_NAME "NAMELESS!"
 #endif
@@ -19,7 +21,8 @@ class WifiManger {
     void setupMaint(const char* ssid, const char* passwd = apPasswd);
 
     // sets wifi to WIFI_AP_STA
-    void setupFailsafe(const char* ssid, const char* passwd = apPasswd);
+    void setupFailsafe(const char* ssidAP, const char* passwdAP = apPasswd,
+                       const char* ssidSTA = nullptr, const char* passwdSTA = nullptr);
 
   private:
     bool wifiInitd       = false;
@@ -28,7 +31,11 @@ class WifiManger {
     bool wifiInitdFail   = false;
 
     void protectedSetupNormal(const char* ssid = nullptr, const char* passwd = nullptr);
-    void protectedSetupMaint(const char* ssid, const char* passwd);
-    void protectedSetupFail(const char* ssid, const char* passwd);
+    void protectedSetupMaint(const char* ssid, const char* passwd = apPasswd);
+    void protectedSetupFail(const char* ssidAP, const char* passwdAP = apPasswd,
+                            const char* ssidSTA = nullptr, const char* passwdSTA = nullptr);
+
+    void init();
+    void copyField(uint8_t* dst, size_t dstSize, const char* src);
 };
 extern WifiManger wifi;
