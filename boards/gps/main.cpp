@@ -1,4 +1,3 @@
-#define BOARD_NAME "GPS"
 #define WIRELESS_USE_ESPNOW
 
 #include "atria/core.h"

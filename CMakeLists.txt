@@ -1,3 +1,10 @@
 cmake_minimum_required(VERSION 3.16.0)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(ESP-telemetry)
+
+if(DEFINED BOARD_ENV_PATH)
+    string(REGEX REPLACE "^\\.+" "" PROJ_NAME "${BOARD_ENV_PATH}")
+    string(TOLOWER "${PROJ_NAME}" PROJ_NAME)
+else()
+    set(PROJ_NAME esp-telemetry)
+endif()
+project(${PROJ_NAME})
