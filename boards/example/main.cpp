@@ -10,19 +10,16 @@
  * 1. Secrets: Rename `secrets.example.h` to `secrets.h` in `/atria/secrets`
  *    and fill in your credentials.
  * 2. Configuration:
- *    - Define `BOARD_NAME` below to match your hardware setup.
- *    - Set the appropriate wireless flags/mode for your use case.
+ *    - Define `BOARD_NAME` in platformio.ini to match your hardware setup.
+ *    - Set the appropriate wireless flags/definitons for your use case.
  *
  * NOTE:
- * - `BOARD_NAME` must be defined BEFORE including project headers.
+ * - `BOARD_NAME` is used to differentiate the boards when they are in AP mode,
+ *   thats why it should be unique if you plan to use more boards...
  */
 
 // NOTICE:
-// you must set these macros before including wireless.h
-// - used to differentiate the boards when they are in AP mode
-//   should be unique if you plan to use more boards...
-#define BOARD_NAME "YourBoard"
-
+// you must set one of these definition before including wireless.h
 // - used to include only the protocols you will need
 //   options:
 //     - WIRELESS_USE_WIFI   - includes only wifi
