@@ -1,5 +1,3 @@
-#define BOARD_NAME "MCU"
-
 #include "atria/core.h"
 // #include "atria/wireless.h"
 
