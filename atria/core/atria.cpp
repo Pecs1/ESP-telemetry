@@ -128,6 +128,4 @@ void CoreUtil::protectedSetMode(SystemMode nextMode) {
 
     logger.info(MODULE_NAME, "mode set to \"%s\"", stringify(mode));
 }
-#undef MODULE_NAME
-
 CoreUtil core;

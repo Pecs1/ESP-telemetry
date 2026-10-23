@@ -26,5 +26,4 @@ class Prefs {
     uint8_t protectedKeyReader(const char* key);
     void protectedKeyWriter(const char* key, uint8_t value);
 };
-
 extern Prefs prefs;

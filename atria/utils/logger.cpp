@@ -70,5 +70,4 @@ void LogUtil::printer(const char* color, const char* level, const char* componen
         Serial.printf("%s[%s] [%s] %s%s\n", color, level, component, payload, colorReset);
     }
 }
-
 LogUtil logger;
