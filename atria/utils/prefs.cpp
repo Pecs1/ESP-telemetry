@@ -99,6 +99,4 @@ void Prefs::protectedKeyWriter(const char* key, uint8_t value) {
 
     close();
 }
-#undef MODULE_NAME
-
 Prefs prefs;

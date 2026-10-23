@@ -158,6 +158,4 @@ void WifiManger::protectedSetupFail(const char* ssidAP, const char* passwdAP, co
         logger.warn(MODULE_NAME, "started AP+STA, but STA started without connecting");
     }
 }
-#undef MODULE_NAME
-
 WifiManger wifi;
