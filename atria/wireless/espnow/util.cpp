@@ -67,6 +67,4 @@ void EspNowUtil::protectedRegisterPeer(const uint8_t* address, uint8_t channel, 
     });
     logger.info(MODULE_NAME, "Successfuly registered/added peer");
 }
-#undef MODULE_NAME
-
 EspNowUtil espnow;
