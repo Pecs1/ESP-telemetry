@@ -1,6 +1,5 @@
 #include "abi.h"
 
-// abi.cpp
 static_assert(LIB_ABI_VER >= 1 && LIB_ABI_VER <= 255,
               "LIB_ABI_VER must be set via build flags (1-255)");
 
