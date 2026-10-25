@@ -23,8 +23,8 @@ Located in the [`/boards`](./boards) directory:
 | [`main`](./boards/main/main.cpp) | *to be added* |
 | [`temps`](./boards/temps/main.cpp) | **ESP32-WROOM-32U** |
 | [`gps`](./boards/gps/main.cpp) |  **ESP32-WROOM-32U** |
-| [`R-LoRa`](./boards/R-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
-| [`S-LoRa`](./boards/S-LoRa/main.cpp) | **LilyGO TTGO LoRa32** |
+| [`r-lora`](./boards/r-lora/main.cpp) | **LilyGO TTGO LoRa32** |
+| [`s-lora`](./boards/s-lora/main.cpp) | **LilyGO TTGO LoRa32** |
 
 
 ### Sensors
