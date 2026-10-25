@@ -3,6 +3,7 @@
 #include "atria/utils/guard.h"
 #include "atria/utils/logger.h"
 #include "atria/utils/prefs.h"
+#include "atria/utils/versioner.h"
 
 #include <HardwareSerial.h>
 
@@ -88,7 +89,8 @@ void CoreUtil::protectedSetup() {
     Serial.flush();
     delay(100);
 
-    logger.info(MODULE_NAME, "board has started!");
+    logger.info(MODULE_NAME, "\"%s\" board started (app: v%s, ABI: v%u)", version.getProjectName(),
+                version.getProjectVer(), version.getLibABI());
 }
 
 void CoreUtil::protectedCheckKeys() {
