@@ -13,7 +13,7 @@ const char* VersionUtil::getProjectVer() const {
 }
 
 uint8_t VersionUtil::getLibABI() const {
-    return custom_lib_desc.lib_abi;
+    return libDescABI.lib_abi;
 }
 
 uint8_t VersionUtil::getMajorVer() const {
