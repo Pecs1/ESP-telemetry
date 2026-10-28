@@ -55,6 +55,13 @@ jobs:
       - name: Install PlatformIO Core
         run: pip install --upgrade platformio
 
+      - name: Read versions from platformio.ini
+        id: versions
+        run: |
+          json=$(python system/ci-naming.py "${{ matrix.env }}")
+          echo "version=$(jq -er .version <<< "$json")" >> "$GITHUB_OUTPUT"
+          echo "lib_abi=$(jq -er .lib_abi <<< "$json")" >> "$GITHUB_OUTPUT"
+
       - name: Prepare Secrets & Signing Key
         env:
           SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
@@ -90,12 +97,15 @@ jobs:
           shred -u atria/secrets/secrets.h 2>/dev/null || rm -f atria/secrets/secrets.h
 
       - name: Stage Artifacts
+        env:
+          BOARD_VER: ${{ steps.versions.outputs.version }}
+          ABI_VER: ${{ steps.versions.outputs.lib_abi }}
         run: |
           mkdir -p release_artifacts
 
           # Board Firmware
           if [ -f ".pio/build/${{ matrix.env }}/firmware.bin" ]; then
-            cp ".pio/build/${{ matrix.env }}/firmware.bin" "release_artifacts/firmware-${{ matrix.env }}.bin"
+            cp ".pio/build/${{ matrix.env }}/firmware.bin" "release_artifacts/firmware-a${ABI_VER}-${{ matrix.env }}-v${BOARD_VER}.bin"
           else
             echo "::error::No firmware.bin found for ${{ matrix.env }}"
             exit 1
@@ -117,7 +127,7 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: firmware-${{ matrix.env }}
-          path: release_artifacts/firmware-${{ matrix.env }}.bin
+          path: release_artifacts/firmware-a${{ steps.versions.outputs.lib_abi }}-${{ matrix.env }}-v${{ steps.versions.outputs.version }}.bin
           if-no-files-found: error
 
       - name: Upload MCU Bootloader Artifact
