@@ -1,0 +1,129 @@
+name: Build Firmware
+
+on:
+  workflow_call:
+    inputs:
+      targets_json:
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Firmware Target (${{ matrix.env }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(inputs.targets_json) }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install ccache
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y ccache
+
+      - name: Cache PlatformIO Packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/packages
+            ~/.platformio/platforms
+          key: pio-pkgs-${{ hashFiles('**/platformio.ini') }}
+          restore-keys: |
+            pio-pkgs-
+
+      - name: Cache ccache Object Files
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /home/runner/.cache/ccache
+          key: ccache-${{ matrix.env }}-${{ github.sha }}
+          restore-keys: |
+            ccache-${{ matrix.env }}-
+            ccache-
+
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+
+      - name: Install PlatformIO Core
+        run: pip install --upgrade platformio
+
+      - name: Prepare Secrets & Signing Key
+        env:
+          SIGNING_KEY_BASE64: ${{ secrets.SIGNING_KEY_BASE64 }}
+          SECRETS_H_BASE64: ${{ secrets.SECRETS_H_BASE64 }}
+        run: |
+          mkdir -p atria/secrets
+          echo "$SECRETS_H_BASE64" | base64 -d > atria/secrets/secrets.h
+
+          # Place signing key where sdkconfig expects it
+          echo "$SIGNING_KEY_BASE64" | base64 -d > system/signature-key.pem
+
+      - name: Build Target Environments
+        env:
+          CCACHE_DIR: /home/runner/.cache/ccache
+          CCACHE_MAXSIZE: 500M
+        run: |
+          set -o pipefail
+
+          export PATH="/usr/lib/ccache:$PATH"
+
+          echo "--- reset stats for ccache ---"
+          ccache --zero-stats
+
+          pio run -e "${{ matrix.env }}" 2>&1 | { grep -Ev "Compiling|Archiving" || true; }
+
+          echo "--- ccache stats ---"
+          ccache --show-stats
+
+      - name: Secure Cleanup of Secrets
+        if: always()
+        run: |
+          shred -u system/signature-key.pem 2>/dev/null || rm -f system/signature-key.pem
+          shred -u atria/secrets/secrets.h 2>/dev/null || rm -f atria/secrets/secrets.h
+
+      - name: Stage Artifacts
+        run: |
+          mkdir -p release_artifacts
+
+          # Board Firmware
+          if [ -f ".pio/build/${{ matrix.env }}/firmware.bin" ]; then
+            cp ".pio/build/${{ matrix.env }}/firmware.bin" "release_artifacts/firmware-${{ matrix.env }}.bin"
+          else
+            echo "::error::No firmware.bin found for ${{ matrix.env }}"
+            exit 1
+          fi
+
+          # Bootloader: only the designated board per MCU stages it
+          if [ "${{ matrix.boot }}" == "true" ]; then
+            BL=".pio/build/${{ matrix.env }}/bootloader.bin"
+            if [ -f "$BL" ]; then
+              cp "$BL" "release_artifacts/bootloader-${{ matrix.mcu }}.bin"
+            else
+              echo "::error::No bootloader.bin for ${{ matrix.env }}. Found:"
+              find ".pio/build/${{ matrix.env }}" -name '*.bin'
+              exit 1
+            fi
+          fi
+
+      - name: Upload Board Firmware Artifact
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: firmware-${{ matrix.env }}
+          path: release_artifacts/firmware-${{ matrix.env }}.bin
+          if-no-files-found: error
+
+      - name: Upload MCU Bootloader Artifact
+        if: matrix.boot == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: bootloader-${{ matrix.mcu }}
+          path: release_artifacts/bootloader-${{ matrix.mcu }}.bin
+          if-no-files-found: error

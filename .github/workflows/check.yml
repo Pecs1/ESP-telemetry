@@ -1,0 +1,129 @@
+name: Lint check & Build
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - '.gitignore'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  formatting-check:
+    name: Check Formatting
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Check for C/C++ file changes
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: changes
+        with:
+          filters: |
+            cpp:
+              - '**/*.cpp'
+              - '**/*.c'
+              - '**/*.h'
+              - '**/*.hpp'
+
+      - name: Run clang-format style check
+        if: steps.changes.outputs.cpp == 'true'
+        uses: jidicula/clang-format-action@654a770daa28443dd111d133e4083e21c1075674 # v4.18.0
+        with:
+          clang-format-version: '22'
+
+  determine-targets:
+    name: Determine Build Targets
+    runs-on: ubuntu-latest
+    outputs:
+      targets_json: ${{ steps.set-targets.outputs.targets_json }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Filter Changed Paths
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        id: filter
+        with:
+          filters: |
+            shared:
+              - 'atria/**'
+              - 'system/**'
+              - 'platformio.ini'
+              - '.github/workflows/**'
+            gps:
+              - 'boards/gps/**'
+            main:
+              - 'boards/main/**'
+            r-lora:
+              - 'boards/R-LoRa/**'
+            s-lora:
+              - 'boards/S-LoRa/**'
+            temps:
+              - 'boards/temps/**'
+
+      - name: Compute Target Matrix JSON
+        id: set-targets
+        run: |
+          # Map board environments to their target MCU architecture
+          declare -A MCU_MAP=(
+            ["gps"]="esp32"
+            ["main"]="esp32"
+            ["r-lora"]="esp32"
+            ["s-lora"]="esp32"
+            ["temps"]="esp32"
+          )
+
+          ALL_BOARDS=("gps" "main" "r-lora" "s-lora" "temps")
+          ACTIVE_BOARDS=()
+
+          # Force full matrix build on release shared code changes
+          if [ "${{ steps.filter.outputs.shared }}" == "true" ]; then
+            ACTIVE_BOARDS=("${ALL_BOARDS[@]}")
+          else
+            [ "${{ steps.filter.outputs.gps }}" == "true" ] && ACTIVE_BOARDS+=("gps")
+            [ "${{ steps.filter.outputs.main }}" == "true" ] && ACTIVE_BOARDS+=("main")
+            [ "${{ steps.filter.outputs.r-lora }}" == "true" ] && ACTIVE_BOARDS+=("r-lora")
+            [ "${{ steps.filter.outputs.s-lora }}" == "true" ] && ACTIVE_BOARDS+=("s-lora")
+            [ "${{ steps.filter.outputs.temps }}" == "true" ] && ACTIVE_BOARDS+=("temps")
+
+            # Fallback to all if no specific board filter triggered
+            if [ ${#ACTIVE_BOARDS[@]} -eq 0 ]; then
+              ACTIVE_BOARDS=("${ALL_BOARDS[@]}")
+            fi
+          fi
+
+          declare -A SEEN_MCU=()
+          JSON_ITEMS=()
+          for board in "${ACTIVE_BOARDS[@]}"; do
+            mcu="${MCU_MAP[$board]}"
+            if [ -z "${SEEN_MCU[$mcu]:-}" ]; then
+              SEEN_MCU[$mcu]=1
+              boot=true
+            else
+              boot=false
+            fi
+            JSON_ITEMS+=("{\"env\":\"$board\",\"mcu\":\"$mcu\",\"boot\":\"$boot\"}")
+          done
+
+          MATRIX_JSON="[$(IFS=,; echo "${JSON_ITEMS[*]}")]"
+          echo "targets_json=$MATRIX_JSON" >> $GITHUB_OUTPUT
+
+  build:
+    needs: [formatting-check, determine-targets]
+    uses: ./.github/workflows/build.yml
+    with:
+      targets_json: ${{ needs.determine-targets.outputs.targets_json }}
+    secrets: inherit
