@@ -6,6 +6,12 @@
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
+// stops arduino verifying OTA image
+// lets aethr (and me) handle the verification instead
+extern "C" bool verifyRollbackLater() {
+    return true;
+}
+
 void initApp() {
     initArduino();
 
