@@ -76,6 +76,7 @@ jobs:
             release_binaries/*.bin
             release_binaries/sha256sum.txt
           draft: true
+          body_path: .github/templates/release.md
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}
         env:
