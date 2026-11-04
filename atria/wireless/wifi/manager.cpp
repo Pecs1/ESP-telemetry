@@ -25,11 +25,8 @@ void WifiManger::copyField(uint8_t* dst, size_t dstSize, const char* src) {
 
 // *** protect functions to run only once ***
 void WifiManger::setupNormal(const char* ssid, const char* passwd) {
-    if (!wifiInitd) {
-        wifiInitd       = true;
-        wifiInitdNormal = true;
-        protectedSetupNormal(ssid, passwd);
-    } else {
+    // check and return if wifi was init
+    if (wifiInitd) {
         if (wifiInitdMaint) {
             guardBlockMSG("setupMaint");
         } else if (wifiInitdFail) {
@@ -37,15 +34,16 @@ void WifiManger::setupNormal(const char* ssid, const char* passwd) {
         } else {
             guardMSG();
         }
+        return;
     }
+    wifiInitd       = true;
+    wifiInitdNormal = true;
+    protectedSetupNormal(ssid, passwd);
 }
 
 void WifiManger::setupMaint(const char* ssid, const char* passwd) {
-    if (!wifiInitd) {
-        wifiInitd      = true;
-        wifiInitdMaint = true;
-        protectedSetupMaint(ssid, passwd);
-    } else {
+    // check and return if wifi was init
+    if (wifiInitd) {
         if (wifiInitdNormal) {
             guardBlockMSG("setupNormal");
         } else if (wifiInitdFail) {
@@ -53,16 +51,17 @@ void WifiManger::setupMaint(const char* ssid, const char* passwd) {
         } else {
             guardMSG();
         }
+        return;
     }
+    wifiInitd      = true;
+    wifiInitdMaint = true;
+    protectedSetupMaint(ssid, passwd);
 }
 
 void WifiManger::setupFailsafe(const char* ssidAP, const char* passwdAP, const char* ssidSTA,
                                const char* passwdSTA) {
-    if (!wifiInitd) {
-        wifiInitd     = true;
-        wifiInitdFail = true;
-        protectedSetupFail(ssidAP, passwdAP, ssidSTA, passwdSTA);
-    } else {
+    // check and return if wifi was init
+    if (wifiInitd) {
         if (wifiInitdNormal) {
             guardBlockMSG("setupNormal");
         } else if (wifiInitdMaint) {
@@ -70,7 +69,11 @@ void WifiManger::setupFailsafe(const char* ssidAP, const char* passwdAP, const c
         } else {
             guardMSG();
         }
+        return;
     }
+    wifiInitd     = true;
+    wifiInitdFail = true;
+    protectedSetupFail(ssidAP, passwdAP, ssidSTA, passwdSTA);
 }
 
 // *** protected wifi implementation ***
