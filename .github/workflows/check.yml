@@ -7,12 +7,14 @@ on:
     paths-ignore:
       - '**.md'
       - '.gitignore'
+      - '.github/workflows/release.yml'
   pull_request:
     branches:
       - main
     paths-ignore:
       - '**.md'
       - '.gitignore'
+      - '.github/workflows/release.yml'
 
 permissions:
   contents: read
