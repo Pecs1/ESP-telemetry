@@ -9,9 +9,10 @@ void executeMSG(const char* module, const char* function) {
     logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", module, function);
 }
 
-void executeDepsMSG(const char* module, const char* calledFunction, const char* blockedByFunction) {
+void executeDepsMSG(const char* module, const char* calledFunction, const char* blockedByModule,
+                    const char* blockedByFunction) {
     logger.err(MODULE_NAME, "you can use \"%s.%s\" after calling \"%s.%s\"", module, calledFunction,
-               module, blockedByFunction);
+               blockedByModule, blockedByFunction);
     logger.warn(MODULE_NAME, "skipping \"%s.%s\"...", module, calledFunction);
 }
 

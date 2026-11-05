@@ -25,6 +25,10 @@ void EspNowUtil::init() {
 
     // checks and returns if wifi.setupNormal or wifi.setupFailSafe wasnt called yet
     if (!sta) {
+        // cheated a little bit... didnt bother writitng another execute<smth>MSG()
+        // thats why i did this little workaround...  buut whoo caaares (maybe some committee lmao)
+        // maybe some day ill write it... but no promises :P
+        guardGlobDepsMSG("wifi", "setupNormal\" or \"wifi.setupFailSafe");
         return;
     }
 
