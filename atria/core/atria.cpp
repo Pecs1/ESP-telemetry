@@ -29,50 +29,59 @@ namespace {
 
 // *** protect functions ***
 void CoreUtil::setup() {
-    if (!initSetup) {
-        initSetup = true;
-        protectedSetup();
-    } else {
+    // check and return if setup was called already
+    if (initSetup) {
         guardMSG();
+        return;
     }
+    initSetup = true;
+    protectedSetup();
 }
 
 void CoreUtil::checkKeys() {
-    if (initSetup && !checkedKeys) {
-        checkedKeys = true;
-        protectedCheckKeys();
-    } else if (!initSetup) {
+    // check and return if setup wasnt called yet
+    if (!initSetup) {
         guardBlockMSG("setup");
-    } else {
-        guardMSG();
+        return;
     }
+
+    // check and return if checkKeys was called already
+    if (checkedKeys) {
+        guardMSG();
+        return;
+    }
+    checkedKeys = true;
+    protectedCheckKeys();
 }
 
 SystemMode CoreUtil::readMode() {
-    if (initSetup && checkedKeys) {
-        return protectedReadMode();
-    }
-
-    if (!checkedKeys) {
-        guardDepsMSG("checkKeys");
-    }
+    // check and return if setup wasnt called yet
     if (!initSetup) {
         guardDepsMSG("setup");
+        return SystemMode::UNKNOWN;
     }
-    return SystemMode::UNKNOWN;
+
+    // check and return if checkKeys was called already
+    if (!checkedKeys) {
+        guardDepsMSG("checkKeys");
+        return SystemMode::UNKNOWN;
+    }
+    return protectedReadMode();
 }
 
 void CoreUtil::setMode(SystemMode nextMode) {
-    if (initSetup && checkedKeys) {
-        protectedSetMode(nextMode);
-    }
-
-    if (!checkedKeys) {
-        guardDepsMSG("checkKeys");
-    }
+    // check and return if setup wasnt called yet
     if (!initSetup) {
         guardDepsMSG("setup");
+        return;
     }
+
+    // check and return if checkKeys wasnt called yet
+    if (!checkedKeys) {
+        guardDepsMSG("checkKeys");
+        return;
+    }
+    protectedSetMode(nextMode);
 }
 
 // *** protected core stuff ***

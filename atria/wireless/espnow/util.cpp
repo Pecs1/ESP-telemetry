@@ -20,20 +20,22 @@ namespace {
 
 // *** protect functions to run only once ***
 void EspNowUtil::init() {
-    if (!espnowInitd) {
-        espnowInitd = true;
-        protectedInit();
-    } else {
+    // check and return if init was called already
+    if (espnowInitd) {
         guardMSG();
+        return;
     }
+    espnowInitd = true;
+    protectedInit();
 }
 
 void EspNowUtil::registerPeer(const uint8_t* address, uint8_t channel, bool encrypt) {
-    if (espnowInitd) {
-        protectedRegisterPeer(address, channel, encrypt);
-    } else {
+    // check and return if init wasnt called yet
+    if (!espnowInitd) {
         guardDepsMSG("init");
+        return;
     }
+    protectedRegisterPeer(address, channel, encrypt);
 }
 
 // *** protected esp_now implementation ***

@@ -43,31 +43,33 @@ void Prefs::close() {
 
 // *** protect functions ***
 void Prefs::keyGenerator() {
-    if (!keysGenerated) {
-        keysGenerated = true;
-        protectedKeyGenerator();
-    } else {
+    // check and return if keyGenerator was called already
+    if (keysGenerated) {
         guardMSG();
+        return;
     }
+    keysGenerated = true;
+    protectedKeyGenerator();
 }
 
 uint8_t Prefs::keyReader(const char* whatKey) {
-    if (keysGenerated) {
-        return protectedKeyReader(whatKey);
-    } else {
-        guardDepsMSG(".keyGenerator");
+    // check and return if keyGenerator wasnt called yet
+    if (!keysGenerated) {
+        guardDepsMSG("keyGenerator");
+        // will be safest to return the highest possible value
+        // since values above 10 arent used
+        return 255;
     }
-    // will be safest to return the highest possible value
-    // since values above 10 arent used
-    return 255;
+    return protectedKeyReader(whatKey);
 }
 
 void Prefs::keyWriter(const char* key, uint8_t value) {
-    if (keysGenerated) {
-        protectedKeyWriter(key, value);
-    } else {
-        guardDepsMSG(".keyGenerator");
+    // check and return if keyGenerator wasnt called yet
+    if (!keysGenerated) {
+        guardDepsMSG("keyGenerator");
+        return;
     }
+    protectedKeyWriter(key, value);
 }
 
 // *** protected functions ***
