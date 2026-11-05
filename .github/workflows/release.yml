@@ -4,6 +4,13 @@ on:
   push:
     tags:
       - "v*"
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Test Tag Name (e.g., v1.0.0-test)'
+        required: true
+        default: 'v1.0.0-test'
+        type: string
 
 permissions:
   contents: read
@@ -69,17 +76,27 @@ jobs:
         run: |
           cd release_binaries
           sha256sum *.bin > sha256sum.txt
+      
+      - name: Resolve Release Tag Name
+        id: tag-resolver
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "name=${{ inputs.tag_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
 
       - name: Create Release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3
         with:
-          name: ${{ github.ref_name }}
+          tag_name: ${{ steps.tag-resolver.outputs.name }}
+          name: ${{ steps.tag-resolver.outputs.name }}
           files: |
             release_binaries/*.bin
             release_binaries/sha256sum.txt
           draft: true
           body_path: .github/templates/release.md
           generate_release_notes: true
-          prerelease: ${{ contains(github.ref_name, '-') }}
+          prerelease: ${{ contains(steps.tag-resolver.outputs.name, '-') }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
