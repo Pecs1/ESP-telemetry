@@ -24,6 +24,10 @@ class WifiManger {
     void setupFailsafe(const char* ssidAP, const char* passwdAP = apPasswd,
                        const char* ssidSTA = nullptr, const char* passwdSTA = nullptr);
 
+    // is used for blocking some features
+    // returns true if its in STA or AP_STA
+    bool isInSTA() const;
+
   private:
     bool wifiInitd       = false;
     bool wifiInitdNormal = false;
