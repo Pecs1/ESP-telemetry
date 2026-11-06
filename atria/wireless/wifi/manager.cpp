@@ -161,4 +161,8 @@ void WifiManger::protectedSetupFail(const char* ssidAP, const char* passwdAP, co
         logger.warn(MODULE_NAME, "started AP+STA, but STA started without connecting");
     }
 }
+
+bool WifiManger::isInSTA() const {
+    return (wifiInitdNormal || wifiInitdFail);
+}
 WifiManger wifi;

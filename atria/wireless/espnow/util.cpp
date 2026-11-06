@@ -3,6 +3,7 @@
 #include "atria/utils/guard.h"
 #include "atria/utils/logger.h"
 #include "atria/utils/retry.h"
+#include "atria/wireless/wifi/manager.h"
 
 #include <cstring>
 #include <esp_now.h>
@@ -20,6 +21,17 @@ namespace {
 
 // *** protect functions to run only once ***
 void EspNowUtil::init() {
+    bool sta = wifi.isInSTA();
+
+    // checks and returns if wifi.setupNormal or wifi.setupFailSafe wasnt called yet
+    if (!sta) {
+        // cheated a little bit... didnt bother writitng another execute<smth>MSG()
+        // thats why i did this little workaround...  buut whoo caaares (maybe some committee lmao)
+        // maybe some day ill write it... but no promises :P
+        guardGlobDepsMSG("wifi", "setupNormal\" or \"wifi.setupFailSafe");
+        return;
+    }
+
     // check and return if init was called already
     if (espnowInitd) {
         guardMSG();
