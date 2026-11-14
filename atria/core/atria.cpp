@@ -6,6 +6,7 @@
 #include "atria/utils/versioner.h"
 
 #include <HardwareSerial.h>
+#include <esp_system.h>
 
 #define MODULE_NAME "core"
 
@@ -84,6 +85,19 @@ void CoreUtil::setMode(SystemMode nextMode) {
     protectedSetMode(nextMode);
 }
 
+void CoreUtil::fallbackReboot(SystemMode fallbackMode) {
+    if (!initSetup) {
+        guardDepsMSG("setup");
+        return;
+    }
+
+    if (!checkedKeys) {
+        guardDepsMSG("checkKeys");
+        return;
+    }
+    protectedFallbackReboot(fallbackMode);
+}
+
 // *** protected core stuff ***
 void CoreUtil::protectedSetup() {
     Serial.begin(SERIAL_BAUD);
@@ -138,5 +152,19 @@ void CoreUtil::protectedSetMode(SystemMode nextMode) {
     prefs.keyWriter(nextModeKey, mode);
 
     logger.info(MODULE_NAME, "mode set to \"%s\"", stringify(mode));
+}
+
+void CoreUtil::protectedFallbackReboot(SystemMode fallbackMode) {
+    logger.crit(MODULE_NAME, "valid mode not found!");
+
+    if (fallbackMode == SystemMode::UNKNOWN) {
+        logger.err(MODULE_NAME, "UNKNOWN is not a valid fallback");
+        logger.warn(MODULE_NAME, "setting to FAILSAFE");
+        fallbackMode = SystemMode::FAILSAFE;
+    }
+
+    // no need to use the public definition, since using the same guards
+    protectedSetMode(fallbackMode);
+    esp_restart();
 }
 CoreUtil core;
