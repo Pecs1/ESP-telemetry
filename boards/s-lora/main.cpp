@@ -47,11 +47,7 @@ void setup() {
         }
 
         default: {
-            logger.crit("core", "mode not found!");
-            logger.warn("core", "setting mode to failsafe!");
-
-            core.setMode(SystemMode::FAILSAFE);
-            ESP.restart();
+            core.fallbackReboot(SystemMode::FAILSAFE);
         }
     }
 }
