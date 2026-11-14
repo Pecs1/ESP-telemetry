@@ -34,6 +34,9 @@ class CoreUtil {
     // - should be used together with readMode()
     void setMode(SystemMode nextMode);
 
+    // called when no valid mode is found in setup switch case
+    void fallbackReboot(SystemMode fallbackMode);
+
   private:
     // protection logic
     bool initSetup   = false;
@@ -44,5 +47,6 @@ class CoreUtil {
     void protectedCheckKeys();
     SystemMode protectedReadMode();
     void protectedSetMode(SystemMode nextMode);
+    void protectedFallbackReboot(SystemMode fallbackMode);
 };
 extern CoreUtil core;

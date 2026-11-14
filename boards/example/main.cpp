@@ -77,14 +77,10 @@ void setup() {
 
         // pretty much required to handle incorrect modes
         default: {
-            logger.crit("core", "mode not found!");
-            logger.warn("core", "setting mode to failsafe!");
-
             // you should set this to the mode you need, for example, here you need just MAINT
             // for my boards i need to have ::FAILSAFE,
             // so i could still try to poll sensors and handle updating
-            core.setMode(SystemMode::MAINT);
-            ESP.restart();
+            core.fallbackReboot(SystemMode::MAINT);
         }
     }
 }
