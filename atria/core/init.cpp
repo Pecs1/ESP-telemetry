@@ -3,6 +3,7 @@
 #include "atria/core/atria.h"
 #include "atria/utils/logger.h"
 
+#include <Arduino.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
