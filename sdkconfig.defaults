@@ -1,7 +1,9 @@
 # Security & Signed Binaries
 CONFIG_SECURE_BOOT=y
 CONFIG_SECURE_BOOT_V2_ENABLED=y
-CONFIG_SECURE_BOOT_BUILD_SIGNED_BINARIES=y
+# disabled coz i had issues with this and it shouldnt matter either way,
+# since i have sign-bins.py that signs all binaries
+CONFIG_SECURE_BOOT_BUILD_SIGNED_BINARIES=n
 CONFIG_SECURE_BOOT_SIGNING_KEY="system/signature-key.pem"
 CONFIG_SECURE_SIGNED_ON_BOOT=y
 CONFIG_SECURE_SIGNED_ON_UPDATE=y
