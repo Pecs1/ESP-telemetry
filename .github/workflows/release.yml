@@ -28,8 +28,8 @@ jobs:
           declare -A MCU_MAP=(
             ["gps"]="esp32"
             ["main"]="esp32"
-            ["r-lora"]="esp32"
-            ["s-lora"]="esp32"
+            ["r-lora"]="esp32s3"
+            ["s-lora"]="esp32s3"
             ["temps"]="esp32"
           )
 
