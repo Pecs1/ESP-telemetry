@@ -64,29 +64,15 @@ Follow these steps sequentially to set up and start developing on the project.
 ### Step 1: Creating Signature Key
 
 > [!Important]
-> Creating signature key is a mandatory initial setup step. Ensure you have **esptool v5.x** installed before proceeding.
-
-> [!Note]
-> You have to run this just once though.
+> Creating signature key is a mandatory initial setup step. You have to run this just once though.
 
 ```bash
-# 1. clone the repo
-git clone https://github.com/Pecs1/ESP-telemetry.git
+# 1. clone the repo and enter it
+git clone https://github.com/Pecs1/ESP-telemetry.git && cd ESP-telemetry
 
-# 2. head to this directory
-cd ESP-telemetry/system
-
-# 3. install esptool, for example:
-sudo pacman -Sy esptool
-
-# 4. generate signature key for secure boot
-espsecure generate-signing-key --version 2 --scheme rsa3072 ./signature-key.pem
-
-# 5. return back to ESP-telemetry root
-cd ../
-
-# optionally uninstall esptool
-sudo pacman -Rns esptool
+# 2. generate signature key for secure boot
+# note: you might have to wait till pioarduino downloads all dependencies
+~/.platformio/penv/bin/espsecure generate-signing-key --version 2 --scheme rsa3072 ./system/signature-key.pem
 ```
 
 ### Step 2: Developing & Building
