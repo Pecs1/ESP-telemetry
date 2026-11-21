@@ -27,13 +27,13 @@ jobs:
         run: |
           declare -A MCU_MAP=(
             ["gps"]="esp32"
-            ["main"]="esp32"
+            ["mcu"]="esp32"
             ["r-lora"]="esp32s3"
             ["s-lora"]="esp32s3"
             ["temps"]="esp32"
           )
 
-          ALL_BOARDS=("gps" "main" "r-lora" "s-lora" "temps")
+          ALL_BOARDS=("gps" "mcu" "r-lora" "s-lora" "temps")
           declare -A SEEN_MCU=()
           JSON_ITEMS=()
           for board in "${ALL_BOARDS[@]}"; do
