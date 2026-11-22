@@ -69,7 +69,7 @@ void setup() {
             wifi.setupMaint(maintSSID);
 
             espnow.init();
-            espnow.registerPeer(mainAddress);
+            espnow.registerPeer(gpsMacAddress);
 
             // do other stuff, like for e.g. start & handle webserver, etc etc
             break;
