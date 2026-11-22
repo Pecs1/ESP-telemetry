@@ -33,21 +33,21 @@ void setup() {
             break;
         }
 
-        case SystemMode::MAINT: {
-            wifi.setupMaint(maintSSID);
-            break;
-        }
+            // case SystemMode::MAINT: {
+            //     wifi.setupMaint(maintSSID);
+            //     break;
+            // }
 
-        case SystemMode::FAILSAFE: {
-            wifi.setupFailsafe(failsafeSSID);
+            // case SystemMode::FAILSAFE: {
+            //     wifi.setupFailsafe(failsafeSSID);
 
-            espnow.init();
-            espnow.registerPeer(mainMacAddress);
-            break;
-        }
+            //     espnow.init();
+            //     espnow.registerPeer(mainMacAddress);
+            //     break;
+            // }
 
         default: {
-            core.fallbackReboot(SystemMode::FAILSAFE);
+            core.fallbackReboot(SystemMode::DEBUG);
         }
     }
 }
@@ -64,16 +64,16 @@ void loop() {
             break;
         }
 
-        case SystemMode::MAINT: {
-            // TODO: add maint
-            break;
-        }
+            // case SystemMode::MAINT: {
+            //     // TODO: add maint
+            //     break;
+            // }
 
-        default: {
-            // TODO: add failsafe
-            // can move failsafe to default,
-            // since not having mode should be handled in setup
-            break;
-        }
+            // default: {
+            //     // TODO: add failsafe
+            //     // can move failsafe to default,
+            //     // since not having mode should be handled in setup
+            //     break;
+            // }
     }
 }
