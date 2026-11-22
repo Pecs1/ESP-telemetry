@@ -70,9 +70,9 @@ jobs:
             main:
               - 'boards/main/**'
             r-lora:
-              - 'boards/R-LoRa/**'
+              - 'boards/r-lora/**'
             s-lora:
-              - 'boards/S-LoRa/**'
+              - 'boards/s-lora/**'
             temps:
               - 'boards/temps/**'
 

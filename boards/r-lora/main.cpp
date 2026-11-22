@@ -21,7 +21,7 @@ void setup() {
             wifi.setupNormal();
 
             espnow.init();
-            espnow.registerPeer(mainAddress);
+            espnow.registerPeer(mainMacAddress);
             break;
         }
 
@@ -29,7 +29,7 @@ void setup() {
             wifi.setupNormal();
 
             espnow.init();
-            espnow.registerPeer(mainAddress);
+            espnow.registerPeer(mainMacAddress);
             break;
         }
 
@@ -42,7 +42,7 @@ void setup() {
             //     wifi.setupFailsafe(failsafeSSID);
 
             //     espnow.init();
-            //     espnow.registerPeer(mainAddress);
+            //     espnow.registerPeer(mainMacAddress);
             //     break;
             // }
 
