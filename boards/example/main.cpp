@@ -57,7 +57,7 @@ void setup() {
             espnow.init();
 
             // register peer/peers & check if they were added successfully
-            espnow.registerPeer(mainAddress);
+            espnow.registerPeer(gpsMacAddress);
 
             // init sensors....
             // handle/start-up stuff required for normal mode, etc etc

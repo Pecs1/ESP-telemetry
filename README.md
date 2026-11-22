@@ -20,7 +20,7 @@ Located in the [`/boards`](./boards) directory:
 | Board | Microcontroller |
 | :---: | :---: |
 | [`example`](./boards/example/main.cpp) | *template/example* |
-| [`main`](./boards/main/main.cpp) | *to be added* |
+| [`dash`](./boards/dash/main.cpp) | **ESP32-WROOM-32U** |
 | [`temps`](./boards/temps/main.cpp) | **ESP32-WROOM-32U** |
 | [`gps`](./boards/gps/main.cpp) |  **ESP32-WROOM-32U** |
 | [`r-lora`](./boards/r-lora/main.cpp) | **ESP32-S3-LR1121-HF-Kit** |
@@ -33,6 +33,7 @@ Located in the [`/boards`](./boards) directory:
 | :---: | :---: |
 | **DS18B20** | Temperature |
 | **SparkFun GPS NEO-M9N, U.FL (Qwiic)** | GPS |
+| **MPU6050** | Gyroscope & Accelerometer |
 
 
 ### External Library Dependencies

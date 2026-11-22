@@ -67,8 +67,8 @@ jobs:
               - '.github/workflows/**'
             gps:
               - 'boards/gps/**'
-            main:
-              - 'boards/main/**'
+            dash:
+              - 'boards/dash/**'
             r-lora:
               - 'boards/r-lora/**'
             s-lora:
@@ -82,13 +82,13 @@ jobs:
           # Map board environments to their target MCU architecture
           declare -A MCU_MAP=(
             ["gps"]="esp32"
-            ["main"]="esp32"
+            ["dash"]="esp32"
             ["r-lora"]="esp32s3"
             ["s-lora"]="esp32s3"
             ["temps"]="esp32"
           )
 
-          ALL_BOARDS=("gps" "main" "r-lora" "s-lora" "temps")
+          ALL_BOARDS=("gps" "dash" "r-lora" "s-lora" "temps")
           ACTIVE_BOARDS=()
 
           # Force full matrix build on release shared code changes
@@ -96,7 +96,7 @@ jobs:
             ACTIVE_BOARDS=("${ALL_BOARDS[@]}")
           else
             [ "${{ steps.filter.outputs.gps }}" == "true" ] && ACTIVE_BOARDS+=("gps")
-            [ "${{ steps.filter.outputs.main }}" == "true" ] && ACTIVE_BOARDS+=("main")
+            [ "${{ steps.filter.outputs.dash }}" == "true" ] && ACTIVE_BOARDS+=("dash")
             [ "${{ steps.filter.outputs.r-lora }}" == "true" ] && ACTIVE_BOARDS+=("r-lora")
             [ "${{ steps.filter.outputs.s-lora }}" == "true" ] && ACTIVE_BOARDS+=("s-lora")
             [ "${{ steps.filter.outputs.temps }}" == "true" ] && ACTIVE_BOARDS+=("temps")
