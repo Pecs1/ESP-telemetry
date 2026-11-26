@@ -57,7 +57,7 @@ void setup() {
             espnow.init();
 
             // register peer/peers & check if they were added successfully
-            espnow.registerPeer(mainAddress);
+            espnow.registerPeer(gpsMacAddress);
 
             // init sensors....
             // handle/start-up stuff required for normal mode, etc etc
@@ -69,7 +69,7 @@ void setup() {
             wifi.setupMaint(maintSSID);
 
             espnow.init();
-            espnow.registerPeer(mainAddress);
+            espnow.registerPeer(gpsMacAddress);
 
             // do other stuff, like for e.g. start & handle webserver, etc etc
             break;

@@ -30,7 +30,7 @@ void setup() {
             wifi.setupNormal();
 
             espnow.init();
-            espnow.registerPeer(mainMacAddress);
+            espnow.registerPeer(gpsMacAddress);
 
             sensors.begin();
             break;
@@ -40,7 +40,7 @@ void setup() {
             wifi.setupNormal();
 
             espnow.init();
-            espnow.registerPeer(mainMacAddress);
+            espnow.registerPeer(gpsMacAddress);
 
             sensors.begin();
             break;
@@ -55,7 +55,7 @@ void setup() {
             //     wifi.setupFailsafe(failsafeSSID);
 
             //     espnow.init();
-            //     espnow.registerPeer(mainMacAddress);
+            //     espnow.registerPeer(gpsMacAddress);
             //     break;
             // }
 
