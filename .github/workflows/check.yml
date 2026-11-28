@@ -43,7 +43,7 @@ jobs:
 
       - name: Run clang-format style check
         if: steps.changes.outputs.cpp == 'true'
-        uses: jidicula/clang-format-action@654a770daa28443dd111d133e4083e21c1075674 # v4.18.0
+        uses: jidicula/clang-format-action@66d8cc15d747754041095258163a80414bbf54ba # v4.19.0
         with:
           clang-format-version: '22'
 
